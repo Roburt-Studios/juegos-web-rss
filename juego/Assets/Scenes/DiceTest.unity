@@ -265,6 +265,7 @@ GameObject:
   - component: {fileID: 281438123}
   - component: {fileID: 281438122}
   - component: {fileID: 281438121}
+  - component: {fileID: 281438126}
   m_Layer: 5
   m_Name: DiceCanvas
   m_TagString: Untagged
@@ -284,6 +285,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 24f68e8a380e5734ab4447901c38f24b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DiceManager
+--- !u!114 &281438126
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 281438120}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f3a9a11c4b84c84b700d8cc2c941b91, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::DiceUI
+  diceManager: {fileID: 281438121}
   dice1: {fileID: 1411569670}
   dice2: {fileID: 675363393}
   scoreText: {fileID: 815370446}

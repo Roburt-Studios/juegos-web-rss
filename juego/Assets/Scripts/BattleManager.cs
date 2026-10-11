@@ -11,6 +11,9 @@ public class BattleManager : MonoBehaviour
     [Header("Interfaz")]
     public BattleUI battleUI;
 
+    [Header("Dados")]
+    [SerializeField] private DiceManager diceManager;
+
     private int partyIndex;
     private int targetIndex;
 
@@ -30,12 +33,15 @@ public class BattleManager : MonoBehaviour
 
     private void Start()
     {
-        if (battleUI == null ||
+        if (diceManager == null)
+            diceManager = GetComponent<DiceManager>();
+
+        if (battleUI == null || diceManager == null ||
             party == null || party.Length == 0 ||
             enemies == null || enemies.Length == 0)
         {
             Debug.LogError(
-                "UI, aliados y enemigos sin asignar"
+                "UI, dados, aliados y enemigos sin asignar"
             );
             enabled = false;
             return;
@@ -63,12 +69,7 @@ public class BattleManager : MonoBehaviour
         BattleUnit actor = CurrentActor;
         BattleUnit target = CurrentTarget;
 
-        target.TakeDamage(actor.attackPower);
-
-        string message =
-            actor.unitName + " ataca a " +
-            target.unitName + " (" +
-            actor.attackPower + " de daño).";
+        string message = DealPlayerDamage(actor, target, actor.attackPower, "ataca a");
 
         AfterPlayerAction(message);
     }
@@ -80,12 +81,7 @@ public class BattleManager : MonoBehaviour
         BattleUnit actor = CurrentActor;
         BattleUnit target = CurrentTarget;
 
-        target.TakeDamage(actor.skillPower);
-
-        string message =
-            actor.unitName + " usa una habilidad contra " +
-            target.unitName + " (" +
-            actor.skillPower + " de daño).";
+        string message = DealPlayerDamage(actor, target, actor.skillPower, "usa una habilidad contra");
 
         AfterPlayerAction(message);
     }
@@ -124,6 +120,21 @@ public class BattleManager : MonoBehaviour
                CurrentActor.IsAlive &&
                CurrentTarget != null &&
                CurrentTarget.IsAlive;
+    }
+
+    private string DealPlayerDamage(
+        BattleUnit actor,
+        BattleUnit target,
+        int baseDamage,
+        string action)
+    {
+        DiceRoll roll = diceManager.Roll();
+        int totalDamage = baseDamage + roll.Total;
+        target.TakeDamage(totalDamage);
+
+        return actor.unitName + " " + action + " " + target.unitName +
+               " (2d6: " + roll.FirstDie + "+" + roll.SecondDie +
+               ", +" + roll.Total + ", " + totalDamage + " de daño).";
     }
 
     private void AfterPlayerAction(string message)

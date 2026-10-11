@@ -208,6 +208,7 @@ GameObject:
   m_Component:
   - component: {fileID: 282580765}
   - component: {fileID: 282580764}
+  - component: {fileID: 282580766}
   m_Layer: 0
   m_Name: BattleManager
   m_TagString: Untagged
@@ -233,6 +234,19 @@ MonoBehaviour:
   - {fileID: 296522093}
   - {fileID: 863650249}
   battleUI: {fileID: 466823195}
+  diceManager: {fileID: 282580766}
+--- !u!114 &282580766
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 282580763}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24f68e8a380e5734ab4447901c38f24b, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::DiceManager
 --- !u!4 &282580765
 Transform:
   m_ObjectHideFlags: 0

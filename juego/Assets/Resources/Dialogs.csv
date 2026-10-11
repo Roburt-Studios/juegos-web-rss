@@ -1,3 +1,8 @@
 DialogID;CharcterID;Text
-D1;player;Hola soy el prota
-D1;enemy;Hola soy el enemigo
+D2;player;Baja el arma. No he venido a reclamar tu cabeza ni el botín de esta fosa.
+D2;enemy;Un caballero sin blasón arrastrándose por el barro... ¿Acaso buscas una muerte rápida?
+D2;player;Busco a un muchacho. Mi escudero. Se adentró en estas catacumbas antes del amanecer.
+D2;enemy;Muchos bajan, pocos regresan enteros. Los túneles inferiores no perdonan a los novatos.
+D2;player;Dime por dónde acceder a los niveles inferiores o comprobarás si mi espada aún recuerda su oficio.
+D2;enemy;Tranquiliza tu hierro, proscrito. Toma el pasaje oriental tras la cripta inundada, pero apresúrate: las bestias del foso ya olieron sangre fresca.
+D2;player;Si vive cuando lo encuentre, consideraré saldada tu deuda con la vida.
