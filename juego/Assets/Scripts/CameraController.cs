@@ -1,7 +1,5 @@
 using System;
 using TMPro;
-using UnityEditor.Rendering;
-using UnityEditor.Rendering.LookDev;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
