@@ -232,21 +232,8 @@ MonoBehaviour:
   - {fileID: 1422150625}
   enemies:
   - {fileID: 296522093}
-  - {fileID: 863650249}
   battleUI: {fileID: 466823195}
   diceManager: {fileID: 282580766}
---- !u!114 &282580766
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 282580763}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 24f68e8a380e5734ab4447901c38f24b, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::DiceManager
 --- !u!4 &282580765
 Transform:
   m_ObjectHideFlags: 0
@@ -262,6 +249,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &282580766
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 282580763}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24f68e8a380e5734ab4447901c38f24b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DiceManager
 --- !u!1 &296522091
 GameObject:
   m_ObjectHideFlags: 0
@@ -1070,7 +1069,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &863650248
 Transform:
   m_ObjectHideFlags: 0

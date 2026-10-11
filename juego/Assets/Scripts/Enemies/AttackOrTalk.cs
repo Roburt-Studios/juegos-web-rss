@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class AttackOrTalk : MonoBehaviour, IInteractable
@@ -49,6 +50,7 @@ public class AttackOrTalk : MonoBehaviour, IInteractable
     public void Attack()
     {
         Debug.Log("Attacking enemy");
+        SceneManager.LoadScene(10);
         CloseMenu();
         gameObject.tag = "Untagged";
     }

@@ -27,14 +27,17 @@ EditorBuildSettings:
     path: Assets/Scenes/LevelSelection.unity
     guid: 7a1d8047da4265946bca7e9c6f3e120c
   - enabled: 1
-    path: Assets/Scenes/Game.unity
-    guid: 5ea41c119b24cd241bc05e7fcda4c0cd
+    path: Assets/Scenes/Level1_Integracion.unity
+    guid: 1737b51b32b8fc0899b2a7ceccc15883
   - enabled: 1
     path: Assets/Scenes/GameOver.unity
     guid: 98228d1554b218b4087e14ba269db504
   - enabled: 1
     path: Assets/Scenes/Victory.unity
     guid: e2184d6fbaed9ca43ac9802599425403
+  - enabled: 1
+    path: Assets/Scenes/CombatScene.unity
+    guid: 64c833422cf0c914982a138fa204d54d
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0
