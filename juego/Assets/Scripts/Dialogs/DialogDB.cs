@@ -32,7 +32,7 @@ public class DialogDB
                 continue;
 
             // Separar por pipe
-            string[] columns = rows[i].Split('|');
+            string[] columns = rows[i].Split(';');
 
             if (columns.Length < 3)
                 continue;
@@ -40,6 +40,8 @@ public class DialogDB
             string id = columns[0].Trim();
             string character = columns[1].Trim();
             string text = columns[2].Trim();
+
+            Debug.Log("id: " + id + " character: " + character + " text: " + text);
 
             // Si el ID no existe en el diccionario, creamos un nuevo Dialog
             if (!dialogs.ContainsKey(id))

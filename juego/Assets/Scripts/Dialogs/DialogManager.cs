@@ -150,6 +150,7 @@ public class DialogManager : MonoBehaviour, IService
             Tuple<string, string> dialogInstance = currentDialog.lines[currentLineIndex];
             uiController.ShowText(
                 dialogInstance.Item2,
+                charactersSpriteMap[dialogInstance.Item1],
                 currentLineIndex,
                 currentDialog.GetLineCount()
             );

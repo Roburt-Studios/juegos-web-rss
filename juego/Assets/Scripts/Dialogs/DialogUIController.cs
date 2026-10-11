@@ -9,6 +9,7 @@ public class DialogUIController : MonoBehaviour
     public Image dialogBox; // Panel/Image que contiene el diálogo
     public TextMeshProUGUI dialogText; // Text component para mostrar el diálogo
     public Button nextButton; // Botón opcional para avanzar
+    public Image characterImage;
 
     public float textSpeed = 0.05f; // Velocidad de aparición del texto (en segundos)
     public bool showInstantly = false; // Si false, anima el texto letra por letra
@@ -27,7 +28,7 @@ public class DialogUIController : MonoBehaviour
         dialogCanvas.enabled = false;
     }
 
-    public void ShowText(string text, int currentLine, int totalLines)
+    public void ShowText(string text, Sprite characterSprite, int currentLine, int totalLines)
     {
         // Validar inicialización
         if (dialogCanvas == null)
@@ -50,6 +51,9 @@ public class DialogUIController : MonoBehaviour
             dialogText.color = new Color(1f, 1f, 1f, 1f); // Blanco con alpha completo
             //Debug.Log("[DialogUIController] Color del texto establecido a: " + dialogText.color);
         }
+
+        characterImage.enabled = true;
+        characterImage.sprite = characterSprite;
 
         // Detener coroutine anterior si existe
         if (textCoroutine != null)
@@ -110,6 +114,7 @@ public class DialogUIController : MonoBehaviour
             StopCoroutine(textCoroutine);
         }
 
+        characterImage.enabled = false;
         dialogCanvas.enabled = false;
     }
 
