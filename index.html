@@ -3,15 +3,18 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Portfolio de Roll-d20: diseño y desarrollo web." />
-    <title>Roll-d20 — Portfolio</title>
+    <meta name="description" content="Portfolio de Robur Studios: diseño y desarrollo web." />
+    <title>Robur Studios — Portfolio</title>
     <style>
       @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
       :root {
-        --ink: #202422;
-        --paper: #f2ebd9;
-        --red: #c7442e;
+        --ink: #fff;
+        --ink2: #adadad;
+        --ink3: #D9D9D9;
+        --paper: #2B0E18;
+        --icon: #D94E4E;
+        --red: #6F4C56;
         --yellow: #e9b942;
         --green: #507a62;
         --line: 2px solid var(--ink);
@@ -65,21 +68,24 @@
       .eyebrow { margin: 0 0 16px; color: var(--red); }
 
       h1, h2, p { margin-top: 0; }
-      h1 { max-width: 720px; margin-bottom: 24px; font-size: clamp(3.25rem, 8vw, 7.2rem); line-height: .86; letter-spacing: -.08em; }
-      h1 span { color: var(--red); }
+      h2 {color: var(--ink3);}
+      p{ color: var(--ink2);}
+      h1 { max-width: 720px; margin-bottom: 24px; font-size: clamp(3.25rem, 8vw, 7.2rem); line-height: .86; letter-spacing: -.08em; color: var(--ink); }
+      h1 span { color: var(--ink2); }
       .intro { max-width: 520px; margin-bottom: 30px; font-size: clamp(1.1rem, 2vw, 1.38rem); }
 
       .button {
         display: inline-block;
         padding: 12px 17px;
         border: var(--line);
-        background: var(--yellow);
+        background: var(--icon);
         box-shadow: var(--shadow);
         font: 500 13px "DM Mono", monospace;
         text-decoration: none;
         transition: transform .15s, box-shadow .15s;
       }
       .button:hover { color: var(--ink); transform: translate(3px, 3px); box-shadow: 2px 2px 0 var(--ink); }
+
 
       .stamp {
         width: 230px;
@@ -89,14 +95,20 @@
         justify-self: end;
         border: var(--line);
         border-radius: 50%;
-        background: var(--green);
+        background: #000;
         color: var(--paper);
         box-shadow: var(--shadow);
         transform: rotate(8deg);
-        text-align: center;
-        font: 500 15px "DM Mono", monospace;
-        line-height: 1.35;
+        overflow: hidden;
       }
+
+      .stamp-img{
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
       .stamp strong { display: block; font: 700 55px "Space Grotesk", sans-serif; letter-spacing: -.08em; }
 
       section { padding: 88px 0; border-bottom: var(--line); }
@@ -114,13 +126,13 @@
         border-bottom: var(--line);
         text-decoration: none;
       }
-      .project:hover { color: var(--ink); background: #e9dfc9; }
+      .project:hover { color: var(--ink); background: var(--red); }
       .project-no { color: var(--red); font: 13px "DM Mono", monospace; }
       .project h3 { margin: 0 0 4px; font-size: clamp(1.35rem, 2vw, 1.8rem); letter-spacing: -.05em; }
       .project p { margin: 0; font-size: .96rem; }
       .project-type { font: 12px "DM Mono", monospace; text-align: right; }
 
-      .about { display: grid; grid-template-columns: .7fr 1.3fr; gap: 10%; }
+      .about { display: block;}
       .about-copy { font-size: clamp(1.2rem, 2vw, 1.7rem); line-height: 1.25; }
       .about-copy p:last-child { margin-bottom: 0; }
       .facts { margin: 0; border-top: var(--line); }
@@ -147,13 +159,146 @@
         .project-type { grid-column: 2; text-align: left; }
         .about { grid-template-columns: 1fr; gap: 34px; }
         footer { flex-direction: column; }
+        .seccion-caja{padding: 32px 30px; margin-bottom: 32px; border-radius: 16px;}
       }
+
+      .contact-list 
+      { 
+        margin-top : 15px; 
+        margin-left: 5%;
+        padding: 15px; 
+        margin-bottom: 15px;
+        list-style: none; 
+      }
+
+      .contact-list .mail 
+      { 
+        font-size: 25px;
+      }
+
+      .contact-list li
+      {
+        margin-bottom: 10px;
+      }
+
+      .equipo{
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 16px;
+        margin-bottom: 30px;
+      }
+
+      .equipo-seccion
+      {
+        margin-top: 40px;
+        border-top: var(--line);
+        padding-top: 30px;
+      }
+      .titulo-equipo
+      {
+        font: 500 12px "DM Mono", monospace;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        color: var(--ink);
+        margin-bottom: 24px;
+      }
+      .equipo-miembro
+      {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+      .avatar
+      {
+        position: relative;
+        height: 100px;
+        height: 100px;
+        margin-bottom: 12px;
+      }
+      .equipo-avatar
+      {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+        border: var(--line);
+        box-shadow: 3px 3px 0 var(--ink);
+        background-color: var(--paper);
+        transition: transform .15s, box-shadow .15s ease;
+      }
+
+      .equipo-miembro:hover .equipo-avatar
+      {
+        transform: translate(-2px, -2px);
+        box-shadow: 5px 5px 0 var(--red);
+      }
+
+      .nombre-miembro
+      {
+        font-size: 0.95rem;
+        font-weight: 600;
+        margin: 0 0 2px;
+        line-height: 1.2;
+        letter-spacing: -0.02em;
+      }
+
+      .rol-miembro
+      {
+        font: 500 11px "DM Mono", monospace;
+        color: var(--ink);
+        opacity: 0.8;
+        margin: 0;
+        line-height: 1.3;
+      }
+
+      .redes-sociales
+      {
+        display: flex;
+        gap: 16px;
+        margin-top: 24px;
+        flex-wrap: wrap;
+      }
+
+      .red-social{
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 20px;
+        border: var(--line);
+        background: var(--paper);
+        box-shadow: var(--shadow);
+        transition: transform .15s, box-shadow .15s ease;
+      }
+
+      .icono{
+        width: 20px;
+        height: 20px;
+        fill: var(--icon);
+      }
+
+      .red-social:hover
+      {
+        color: var(--ink);
+        transform: translate(3px, 3px);
+        box-shadow: 2px 2px 0 var(--red);
+      }
+
+      .seccion-caja{
+        background-color: var(--red);
+        border:var(--line);
+        border-radius: 20px;
+        padding: 48px 36px;
+        margin-bottom: 48px;
+        box-shadow: var(--shadow);
+      }
+
     </style>
   </head>
   <body>
     <div class="page">
       <header>
-        <a class="brand" href="#inicio">ROLL-D20<b>.</b> PORTFOLIO</a>
+        <a class="brand" href="#inicio">ROBUR STUDIOS<b>.</b> PORTFOLIO</a>
         <nav aria-label="Navegación principal">
           <a href="#proyectos">Proyectos</a>
           <a href="#sobre-mi">Perfil</a>
@@ -164,66 +309,143 @@
       <main id="inicio">
         <section class="hero" aria-labelledby="titulo-principal">
           <div>
-            <p class="eyebrow">Diseño &amp; desarrollo web · 2026</p>
-            <h1 id="titulo-principal">Hago sitios con <span>carácter.</span></h1>
-            <p class="intro">Somos Roll-d20, un estudio de diseño y desarrollo web. Construimos experiencias claras, rápidas y con una identidad que se recuerda.</p>
-            <a class="button" href="#proyectos">Ver proyectos seleccionados</a>
+            <p class="eyebrow">Diseño y Desarrollo de Videojuegos · 2026</p>
+            <h1 id="titulo-principal">Robur <br/><span>Studios</span></h1>
+            <p class="intro">Somos Robur Studios, un estudio de desarrollo de videojuegos. Actualmente trabajando en Robur.</p>
+            <a class="button" href="#proyectos">Proyectos en desarrollo</a>
           </div>
-          <aside class="stamp" aria-label="Disponible para colaborar">
-            DISPONIBLE
-            <strong>2026</strong>
-            PARA COLABORAR
+          <aside class="stamp" aria-label="logo de Robur Studios">
+            <img class="stamp-img" src="img/logo.png" alt="Logo de Robur Studios">
           </aside>
         </section>
 
         <section id="proyectos" aria-labelledby="titulo-proyectos">
           <div class="section-heading">
-            <h2 id="titulo-proyectos">Trabajo reciente</h2>
-            <span class="label">01—03</span>
+            <h2 id="titulo-proyectos">Proyectos en desarrollo</h2>
+            <span class="label"></span>
           </div>
           <div class="work-list">
-            <a class="project" href="#contacto">
-              <span class="project-no">01</span>
-              <div><h3>Archivo Local</h3><p>Identidad y plataforma editorial para una revista cultural.</p></div>
-              <span class="project-type">WEB / IDENTIDAD ↗</span>
+            <a class="project" href="https://roburstdios.itch.io/robur" target="_blank" rel="noopener noreferrer">
+              <span class="project-no"></span>
+              <div><h3>Robur</h3><p>RPG de mazmorras con temática oscura y medieval.</p></div>
+              <span class="project-type">Itch.io ↗</span>
             </a>
-            <a class="project" href="#contacto">
-              <span class="project-no">02</span>
-              <div><h3>Ronda</h3><p>Tienda digital para objetos hechos en series pequeñas.</p></div>
-              <span class="project-type">E-COMMERCE ↗</span>
-            </a>
-            <a class="project" href="#contacto">
-              <span class="project-no">03</span>
-              <div><h3>Cartelera Norte</h3><p>Sistema de consulta cultural para una programación independiente.</p></div>
-              <span class="project-type">PRODUCTO DIGITAL ↗</span>
-            </a>
+
           </div>
         </section>
 
         <section id="sobre-mi" class="about" aria-labelledby="titulo-perfil">
-          <div><p class="label">02 / Perfil</p><h2 id="titulo-perfil">Menos ruido.<br />Más intención.</h2></div>
+          <div><p class="label"></p><h2 id="titulo-perfil">Conoce al equipo</h2>
           <div>
             <div class="about-copy">
-              <p>Me interesan los proyectos que cuidan tanto lo que dicen como la forma en que se usan. Trabajo entre la estrategia, el diseño visual y el código para que las ideas lleguen completas a la pantalla.</p>
+              <p>Somos un equipo de desarrolladores en formación, apasionados y con ganas de crear nuevas historias.</p>
             </div>
-            <dl class="facts">
-              <div><dt>Base</dt><dd>Madrid, España</dd></div>
-              <div><dt>Especialidad</dt><dd>Diseño web · Front-end</dd></div>
-              <div><dt>Herramientas</dt><dd>Figma · HTML/CSS · JavaScript</dd></div>
-            </dl>
+
+            <div class="equipo-seccion">
+              <p class="titulo-equipo">Robur Studios</p>
+              <div class="equipo">
+
+                <div class ="equipo-miembro">
+                  <div class = "avatar">
+                    <img class="equipo-avatar" src="img/marc.jpg" alt="Marc Matutes Rapún">
+                  </div>
+                  <h3 class="nombre-miembro">Marc Matutes Rapún</h3>
+                  <p class="rol-miembro">Motor e interfaces</p>
+                </div>
+
+                <div class ="equipo-miembro">
+                  <div class = "avatar">
+                    <a href="https://hugogh28.itch.io/portfolio" target="_blank" rel="noopener noreferrer">
+                      <img class="equipo-avatar" src="img/hugo.jpeg" alt="Hugo García Hernández">
+                    </a>
+                  </div>
+                  <h3 class="nombre-miembro">Hugo García Hernández</h3>
+                  <p class="rol-miembro">Sistemas y narrativa</p>
+                </div>
+
+                <div class ="equipo-miembro">
+                  <div class = "avatar">
+                    <img class="equipo-avatar" src="img/oscar.jpg" alt="Oscar Rodriguez Mari">
+                  </div>
+                  <h3 class="nombre-miembro">Oscar Rodriguez Mari</h3>
+                  <p class="rol-miembro">Diseño y arte</p>
+                </div>
+
+                <div class ="equipo-miembro">
+                  <div class = "avatar">
+                    <img class="equipo-avatar" src="img/javi.jpg" alt="Javier Ruibal Piñero">
+                  </div>
+                  <h3 class="nombre-miembro">Javier Ruibal Piñero</h3>
+                  <p class="rol-miembro">Mecánicas y diseño</p>
+                </div>
+
+                <div class ="equipo-miembro">
+                  <div class = "avatar">
+                    <img class="equipo-avatar" src="img/carlos.jpg" alt="Carlos Vega San Román">
+                  </div>
+                  <h3 class="nombre-miembro">Carlos Vega San Román</h3>
+                  <p class="rol-miembro">Diseño y programación</p>
+                </div>
+              </div>
+            </div>
           </div>
+          </div>
+          
         </section>
 
         <section id="contacto" class="contact" aria-labelledby="titulo-contacto">
-          <p class="label">03 / Contacto</p>
-          <h2 id="titulo-contacto">¿Tienes algo entre manos?</h2>
-          <p>Cuéntame el proyecto, la idea o el problema. Respondo siempre que puedo.</p>
-          <a class="mail" href="mailto:hola@marc.dev">hola@marc.dev</a>
+          <p class="label">Contacto</p>
+          <h2 id="titulo-contacto">¿Quieres contactar con el equipo?</h2>
+          <ul class="contact-list">
+            <li><a class="mail" href="mailto:roburstudios@gmail.com">Robur Studios</a><p>Estudio de desarrollo de videojuegos</p></li>
+            <li><a class="mail" href="mailto:hola@marc.dev">Marc Matutes Rapún</a><p>Programador de motor e interfaces</p></li>
+            <li><a class="mail" href="mailto:hugogarciahernandez281@gmail.com">Hugo García Hernández</a> <p>Programador de sistemas y diseñador narrativo</p></li>
+            <li><a class="mail" href="mailto:osquitarboss@gmail.com">Oscar Rodriguez Mari</a><p>Jefe de diseño y arte</p></li>
+            <li><a class="mail" href="mailto:javierruibalpinero@gmail.com">Javier Ruibal Piñero</a><p>Programador de mecánicas y diseñador</p></li>
+            <li><a class="mail" href="mailto:c.vegas.2020@alumnos.urjc.es">Carlos Vega San Román</a><p>Programador y diseñador gráfico</p></li>
+          </ul>
         </section>
+
+        <section id="redes" class="social-media" aria-labelledby="titulo-redes">
+          <p class="label">Redes</p>
+          <h2 id="titulo-redes">Síguenos en redes sociales</h2>
+
+          <div class = "redes-sociales">
+            <a class = "red-social" href="https://twitter.com/Roburstdios" target="_blank" rel="noopener noreferrer"
+              aria-label = "Twitter X">
+              <svg class = "icono" viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+              </svg>
+            </a>
+
+            <a class = "red-social" href = "https://www.youtube.com/@Roburstdios" target="blank" rel = "noopener noreferrer" aria-label = "YouTube">
+              <svg class = "icono" viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M23.498 6.186a2.994 2.994 0 0 0-2.11-2.11C19.796 3.75 12 3.75 12 3.75s-7.796 0-9.388.326a2.994 2.994 0 0 0-2.11 2.11C0.75 7.778 0.75 12 0.75 12s0 4.222.326 5.814a2.994 2.994 0 0 0 2.11 2.11c1.592.326 9.388.326 9.388.326s7.796 0 9.388-.326a2.994 2.994 0 0 0 2.11-2.11c.326-1.592.326-5.814.326-5.814s0-4.222-.326-5.814zM9.75 15V9l6 3z" />
+              </svg>
+            </a>
+
+            <a class = "red-social" href = "https://roburstdios.itch.io/robur" target="_blank" rel="noopener noreferrer" aria-label = "Itch.io">
+              <svg class = "icono" viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M3.328 2c-.672 0-1.228.528-1.287 1.203L2 3.328v17.344c0 .672.528 1.228 1.203 1.287L3.328 22h17.344c.672 0 1.228-.528 1.287-1.203l.041-.125V3.328c0-.672-.528-1.228-1.203-1.287L20.672 2H3.328zm2.422 4.094h12.5c.34 0 .613.273.613.613v.832c0 .34-.273.613-.613.613H5.75a.613.613 0 0 1-.613-.613v-.832c0-.34.273-.613.613-.613zm.887 3.527h10.726c.387 0 .695.308.695.695v4.54a2.91 2.91 0 0 1-2.91 2.91H8.03a2.91 2.91 0 0 1-2.91-2.91v-4.54c0-.387.308-.695.695-.695zm2.863 2.05a1.137 1.137 0 1 0 0 2.274 1.137 1.137 0 0 0 0-2.274zm4.98 0a1.137 1.137 0 1 0 0 2.274 1.137 1.137 0 0 0 0-2.274z"/>
+              </svg>
+            </a>
+
+            <a class = "red-social" href = "https://linktr.ee/roburstdios" target="_blank" rel="noopener noreferrer" aria-label = "Linktree">
+              <svg class = "icono" viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M13.51 10.264l4.093-3.136-1.53-2.025-4.102 3.142V2.628H9.373v5.617L5.27 5.103l-1.53 2.025 4.094 3.136h-4.99v2.534h6.53v2.585L5.27 18.52l1.53 2.024 4.103-3.142v2.543H9.373v1.427h5.254v-1.427h-1.118v-2.543l4.102 3.142 1.53-2.024-4.102-3.136v-2.585h6.53v-2.534h-4.99z"/>
+              </svg>
+            </a>
+          </div>
+        </section>
+
       </main>
 
       <footer>
-        <span>© 2026 Roll-d20</span>
+        <span>© 2026 Robur Studios</span>
         <span>Hecho con cuidado desde Madrid</span>
       </footer>
     </div>
