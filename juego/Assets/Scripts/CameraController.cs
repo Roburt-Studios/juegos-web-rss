@@ -30,7 +30,6 @@ public class CameraController : MonoBehaviour
     public float rotationSpeed = 0.25f;
     public float rotationSmoothness = 5f;
 
-
     private float currentYaw;
     private float targetYaw;
 
@@ -38,11 +37,8 @@ public class CameraController : MonoBehaviour
     public float lookAheadDistance = 2f;
     public float lookAheadSpeed = 4f;
 
-
     private Vector3 currentLookAhead;
     private Vector3 rootVelocity;
-
-
 
     private float SmoothTime = 0.7f;
     private float gameplayZoom;
@@ -55,13 +51,11 @@ public class CameraController : MonoBehaviour
     private Quaternion targetRotation;
     private Vector3 targetPosition;
 
-
     private void Awake()
     {
         Instance = this;
-
-
     }
+
     void Start()
     {
         if (target == null)
@@ -97,10 +91,8 @@ public class CameraController : MonoBehaviour
         camPos.z = -currentZoom;
         cam.transform.localPosition = camPos;
         SetSmoothTime(SmoothTime);
-        
 
-        pivot.localRotation =
-                Quaternion.Euler(45f, currentYaw, 0f);
+        pivot.localRotation = Quaternion.Euler(45f, currentYaw, 0f);
     }
 
     void Update()
@@ -117,28 +109,22 @@ public class CameraController : MonoBehaviour
         UpdateGameplayZoomTarget();
     }
 
-
-
     public void UpdateLookAhead()
     {
-        Vector3 movementDirection =
-            target.forward;
+        Vector3 movementDirection = target.forward;
 
-        Vector3 desiredLookAhead =
-            movementDirection * lookAheadDistance;
+        Vector3 desiredLookAhead = movementDirection * lookAheadDistance;
 
         currentLookAhead = Vector3.Lerp(
             currentLookAhead,
             desiredLookAhead,
-            lookAheadSpeed * Time.deltaTime);
+            lookAheadSpeed * Time.deltaTime
+        );
     }
 
     public void UpdateGameplayPosition()
     {
-        Debug.Log($"Target: {target.name} - Pos: {target.position}");
-
-        SetTargetPosition(
-            target.position + currentLookAhead);
+        SetTargetPosition(target.position + currentLookAhead);
     }
 
     public void UpdateGameplayRotation()
@@ -148,18 +134,10 @@ public class CameraController : MonoBehaviour
             targetYaw += Mouse.current.delta.ReadValue().x * rotationSpeed;
         }
 
-        currentYaw = Mathf.LerpAngle(
-            currentYaw,
-            targetYaw,
-            rotationSmoothness * Time.deltaTime);
+        currentYaw = Mathf.LerpAngle(currentYaw, targetYaw, rotationSmoothness * Time.deltaTime);
 
-        SetTargetRotation(
-            Quaternion.Euler(
-                45f,
-                currentYaw,
-                0f));
+        SetTargetRotation(Quaternion.Euler(45f, currentYaw, 0f));
     }
-
 
     public void UpdateGameplayZoomInput()
     {
@@ -170,18 +148,13 @@ public class CameraController : MonoBehaviour
 
         gameplayZoom -= scroll * zoomSpeed * 0.01f;
 
-        gameplayZoom = Mathf.Clamp(
-            gameplayZoom,
-            minZoom,
-            maxZoom);
+        gameplayZoom = Mathf.Clamp(gameplayZoom, minZoom, maxZoom);
     }
 
     public void UpdateGameplayZoomTarget()
     {
         SetTargetZoom(gameplayZoom);
     }
-
-
 
     public void SetSmoothTime(float value)
     {
@@ -195,11 +168,8 @@ public class CameraController : MonoBehaviour
         targetYaw = currentYaw;
     }
 
-
     private void UpdateCamera()
     {
-        Debug.Log("Update Camera");
-
         if (SmoothTime <= 0f)
         {
             transform.position = targetPosition;
@@ -210,25 +180,22 @@ public class CameraController : MonoBehaviour
                 transform.position,
                 targetPosition,
                 ref rootVelocity,
-                SmoothTime);
+                SmoothTime
+            );
         }
 
         pivot.localRotation = Quaternion.Slerp(
             pivot.localRotation,
             targetRotation,
-            rotationSmoothness * Time.deltaTime);
+            rotationSmoothness * Time.deltaTime
+        );
 
-        currentZoom = Mathf.SmoothDamp(
-            currentZoom,
-            targetZoom,
-            ref zoomVelocity,
-            SmoothTime);
+        currentZoom = Mathf.SmoothDamp(currentZoom, targetZoom, ref zoomVelocity, SmoothTime);
 
         Vector3 pos = cam.transform.localPosition;
         pos.z = -currentZoom;
         cam.transform.localPosition = pos;
     }
-
 
     public void SetTargetPosition(Vector3 position)
     {
@@ -244,6 +211,4 @@ public class CameraController : MonoBehaviour
     {
         targetZoom = zoom;
     }
-
-
 }

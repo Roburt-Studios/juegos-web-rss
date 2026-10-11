@@ -6,7 +6,11 @@ public class PlayerMovment : MonoBehaviour
     [Header("Movimiento")]
     [SerializeField]
     private float moveSpeed = 10f;
-    private readonly Matrix4x4 isoMatrix = Matrix4x4.Rotate(Quaternion.Euler(0, -45, 0));
+
+    [Header("Referencia")]
+    [Tooltip("La cámara cuya orientación horizontal determina W/A/S/D. Si se deja vacía, se usa Main Camera.")]
+    [SerializeField]
+    private Camera movementCamera;
 
     [Header("Input")]
     [SerializeField]
@@ -24,8 +28,14 @@ public class PlayerMovment : MonoBehaviour
         characterController = GetComponent<CharacterController>();
     }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start() { }
+    void Start()
+    {
+        if (movementCamera == null)
+            movementCamera = Camera.main;
+
+        if (movementCamera == null)
+            Debug.LogWarning("PlayerMovment: No se encontró una Main Camera; el movimiento usará la orientación del jugador.");
+    }
 
     // Update is called once per frame
     void Update()
@@ -41,7 +51,17 @@ public class PlayerMovment : MonoBehaviour
     void Move()
     {
         Vector3 rawInput = new Vector3(inputVector.x, 0f, inputVector.y);
-        Vector3 moveDirection = Vector3.ClampMagnitude(isoMatrix.MultiplyPoint3x4(rawInput), 1f);
+
+        // Se elimina la altura/inclinación de la cámara: solo importa hacia dónde mira sobre el suelo.
+        Transform reference = movementCamera != null ? movementCamera.transform : transform;
+        Vector3 cameraForward = Vector3.ProjectOnPlane(reference.forward, Vector3.up).normalized;
+        Vector3 cameraRight = Vector3.ProjectOnPlane(reference.right, Vector3.up).normalized;
+
+        // W avanza en la dirección que mira la cámara; por tanto, si la cámara está detrás,
+        // el jugador se aleja de ella. A/S/D conservan la misma relación.
+        Vector3 moveDirection = Vector3.ClampMagnitude(
+            (cameraRight * rawInput.x) + (cameraForward * rawInput.z),
+            1f);
 
         Vector3 motion = (moveDirection * moveSpeed) + (Vector3.up * groundedPullForce);
         characterController.Move(motion * Time.deltaTime);
