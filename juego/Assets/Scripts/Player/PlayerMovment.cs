@@ -7,6 +7,10 @@ public class PlayerMovment : MonoBehaviour
     [SerializeField]
     private float moveSpeed = 10f;
 
+    [Tooltip("Velocidad a la que el personaje se orienta hacia su dirección de movimiento.")]
+    [SerializeField]
+    private float rotationSpeed = 720f;
+
     [Header("Referencia")]
     [Tooltip("La cámara cuya orientación horizontal determina W/A/S/D. Si se deja vacía, se usa Main Camera.")]
     [SerializeField]
@@ -62,6 +66,16 @@ public class PlayerMovment : MonoBehaviour
         Vector3 moveDirection = Vector3.ClampMagnitude(
             (cameraRight * rawInput.x) + (cameraForward * rawInput.z),
             1f);
+
+        // El personaje mira hacia donde se desplaza, sin afectar la inclinación vertical.
+        if (moveDirection.sqrMagnitude > 0.0001f)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(moveDirection, Vector3.up);
+            transform.rotation = Quaternion.RotateTowards(
+                transform.rotation,
+                targetRotation,
+                rotationSpeed * Time.deltaTime);
+        }
 
         Vector3 motion = (moveDirection * moveSpeed) + (Vector3.up * groundedPullForce);
         characterController.Move(motion * Time.deltaTime);
