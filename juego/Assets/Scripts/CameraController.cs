@@ -29,10 +29,12 @@ public class CameraController : MonoBehaviour
     public Transform pivot;
     public float rotationSpeed = 0.25f;
     public float rotationSmoothness = 5f;
+    public float maxRotationAngle = 80f;
 
 
     private float currentYaw;
     private float targetYaw;
+    private float initialYaw;
 
     [Header("Look Ahead")]
     public float lookAheadDistance = 2f;
@@ -88,6 +90,8 @@ public class CameraController : MonoBehaviour
         currentYaw = pivot.localEulerAngles.y;
         targetYaw = currentYaw;
 
+        initialYaw = currentYaw;
+
         gameplayZoom = Mathf.Clamp(initialZoom, minZoom, maxZoom);
 
         currentZoom = gameplayZoom;
@@ -135,30 +139,44 @@ public class CameraController : MonoBehaviour
 
     public void UpdateGameplayPosition()
     {
-        Debug.Log($"Target: {target.name} - Pos: {target.position}");
 
         SetTargetPosition(
             target.position + currentLookAhead);
     }
 
+
     public void UpdateGameplayRotation()
     {
+        if (Mouse.current == null)
+            return;
+
         if (Mouse.current.rightButton.isPressed)
         {
             targetYaw += Mouse.current.delta.ReadValue().x * rotationSpeed;
+
+
+            float relativeYaw = Mathf.DeltaAngle(initialYaw, targetYaw);
+
+            relativeYaw = Mathf.Clamp(
+                relativeYaw,
+                -maxRotationAngle,
+                maxRotationAngle
+            );
+
+            targetYaw = initialYaw + relativeYaw;
         }
 
         currentYaw = Mathf.LerpAngle(
             currentYaw,
             targetYaw,
-            rotationSmoothness * Time.deltaTime);
+            rotationSmoothness * Time.deltaTime
+        );
 
         SetTargetRotation(
-            Quaternion.Euler(
-                45f,
-                currentYaw,
-                0f));
+            Quaternion.Euler(45f, currentYaw, 0f)
+        );
     }
+
 
 
     public void UpdateGameplayZoomInput()
@@ -168,7 +186,7 @@ public class CameraController : MonoBehaviour
         if (Mathf.Abs(scroll) < 0.01f)
             return;
 
-        gameplayZoom -= scroll * zoomSpeed * 0.01f;
+        gameplayZoom -= scroll * zoomSpeed * 0.1f;
 
         gameplayZoom = Mathf.Clamp(
             gameplayZoom,
