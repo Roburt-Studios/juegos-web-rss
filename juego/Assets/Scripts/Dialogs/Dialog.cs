@@ -1,27 +1,61 @@
-using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class Dialog
 {
-    public string id;
-    public List<Tuple<string, string>> lines = new List<Tuple<string, string>>();
-
-    public Dialog(string id)
+    public class Option
     {
-        this.id = id;
+        public string text;
+        public string nextId;
+        public string failureNextId;
+        public int difficulty;
+
+        public Option(string text, string nextId, string failureNextId, int difficulty)
+        {
+            this.text = text;
+            this.nextId = nextId;
+            this.failureNextId = failureNextId;
+            this.difficulty = difficulty;
+        }
     }
 
-    // Agrega una línea de texto al diálogo
-    public void AddLine(string charId, string text)
+    public class Node
     {
-        var dialogTuple = new Tuple<string, string>(charId, text);
-        lines.Add(dialogTuple);
+        public string id;
+        public string characterId;
+        public string text;
+        public string nextId;
+        public bool isChoice;
+        public string tag;
+        public readonly List<Option> options = new();
+
+        public Node(string id, string characterId, string text, string nextId, bool isChoice, string tag)
+        {
+            this.id = id;
+            this.characterId = characterId;
+            this.text = text;
+            this.nextId = nextId;
+            this.isChoice = isChoice;
+            this.tag = tag;
+        }
     }
 
-    // Retorna la cantidad total de líneas
-    public int GetLineCount()
+    public readonly string id;
+    public string startNodeId { get; private set; }
+    private readonly Dictionary<string, Node> nodes = new();
+
+    public Dialog(string id) => this.id = id;
+
+    public bool AddNode(Node node)
     {
-        return lines.Count;
+        if (nodes.ContainsKey(node.id))
+            return false;
+
+        if (startNodeId == null)
+            startNodeId = node.id;
+
+        nodes.Add(node.id, node);
+        return true;
     }
+
+    public bool TryGetNode(string nodeId, out Node node) => nodes.TryGetValue(nodeId, out node);
 }
