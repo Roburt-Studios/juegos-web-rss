@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: PaletteDither
+  m_Shader: {fileID: 4800000, guid: 634768316ee8471291b31ea8d94d730d, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BaseMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _Ambient: 0.25
+    - _Cull: 2
+    - _DitherScale: 1
+    - _Exposure: 1
+    - _LightStrength: 0.75
+    m_Colors:
+    - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _Dark: {r: 0.03071344, g: 0.01520851, b: 0.03820437, a: 1}
+    - _Darkest: {r: 0.01032982, g: 0.01520851, b: 0.02217388, a: 1}
+    - _Light: {r: 0.08228271, g: 0.02121901, b: 0.0409152, a: 1}
+    - _Lightest: {r: 0.1651322, g: 0.03071344, b: 0.05286065, a: 1}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1

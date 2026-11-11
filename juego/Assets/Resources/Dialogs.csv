@@ -3,7 +3,7 @@ D2;inicio;line;player;Baja el arma. No he venido a reclamar tu cabeza ni el bot�
 D2;respuesta_enemigo;line;enemy;Un caballero sin blasón arrastrándose por el barro... ¿Acaso buscas una muerte rápida?;busqueda
 D2;busqueda;line;player;Busco a un muchacho. Mi escudero. Se adentró en estas catacumbas antes del amanecer.;advertencia
 D2;advertencia;line;enemy;Muchos bajan, pocos regresan enteros. Los túneles inferiores no perdonan a los novatos.;pregunta
-D2;pregunta;choice;enemy;¿Cómo quieres responderle?;
+D2;pregunta;choice;enemy;;
 D2;pregunta;option;player;Dime por dónde acceder a los niveles inferiores.;ayuda
 D2;pregunta;option;player;Habla o comprobarás si mi espada aún recuerda su oficio.;reaccion;amenaza_fallida;9;
 D2;ayuda;line;enemy;Toma el pasaje oriental tras la cripta inundada. Apresúrate: las bestias del foso ya olieron sangre fresca.;despedida

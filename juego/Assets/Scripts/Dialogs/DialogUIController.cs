@@ -43,12 +43,32 @@ public class DialogUIController : MonoBehaviour
         dialogBox.gameObject.SetActive(true);
         nextButton.gameObject.SetActive(!node.isChoice);
 
-        characterImage.enabled = characterSprite != null;
-        characterImage.sprite = characterSprite;
-
         if (textCoroutine != null)
             StopCoroutine(textCoroutine);
         textCoroutine = null;
+
+        if (node.isChoice)
+        {
+            fullText = "";
+            dialogText.text = "";
+            dialogText.enabled = false;
+            characterImage.enabled = false;
+
+            for (int i = 0; i < node.options.Count; i++)
+            {
+                int selectedIndex = i;
+                Dialog.Option option = node.options[i];
+                string label = option.difficulty > 0
+                    ? $"[2d6 ≥ {option.difficulty}] {option.text}"
+                    : option.text;
+                CreateActionButton(label, () => manager.SelectChoice(selectedIndex), i, node.options.Count, true);
+            }
+            return;
+        }
+
+        dialogText.enabled = true;
+        characterImage.enabled = characterSprite != null;
+        characterImage.sprite = characterSprite;
 
         string text = node.text;
         bool red = !string.IsNullOrEmpty(text) && text[0] == _redTextColorPrefix;
@@ -62,18 +82,6 @@ public class DialogUIController : MonoBehaviour
         else
             textCoroutine = StartCoroutine(AnimateText(text));
 
-        if (node.isChoice)
-        {
-            for (int i = 0; i < node.options.Count; i++)
-            {
-                int selectedIndex = i;
-                Dialog.Option option = node.options[i];
-                string label = option.difficulty > 0
-                    ? $"[2d6 ≥ {option.difficulty}] {option.text}"
-                    : option.text;
-                CreateActionButton(label, () => manager.SelectChoice(selectedIndex), i, node.options.Count);
-            }
-        }
     }
 
     public void ShowRollPrompt(int difficulty)
@@ -83,6 +91,7 @@ public class DialogUIController : MonoBehaviour
             StopCoroutine(textCoroutine);
         textCoroutine = null;
         fullText = $"Tira 2d6. Necesitas sacar {difficulty} o más.";
+        dialogText.enabled = true;
         dialogText.color = Color.white;
         dialogText.text = fullText;
         characterImage.enabled = false;
@@ -100,7 +109,7 @@ public class DialogUIController : MonoBehaviour
         nextButton.gameObject.SetActive(true);
     }
 
-    private void CreateActionButton(string label, Action action, int index, int count)
+    private void CreateActionButton(string label, Action action, int index, int count, bool insideDialogBox = false)
     {
         var buttonObject = new GameObject($"Respuesta {index + 1}", typeof(RectTransform), typeof(Image), typeof(Button));
         buttonObject.transform.SetParent(transform, false);
@@ -110,8 +119,17 @@ public class DialogUIController : MonoBehaviour
         rect.anchorMin = new Vector2(0.5f, 0f);
         rect.anchorMax = new Vector2(0.5f, 0f);
         rect.pivot = new Vector2(0.5f, 0f);
-        rect.sizeDelta = new Vector2(720f, 46f);
-        rect.anchoredPosition = new Vector2(0f, 150f + (count - index - 1) * 54f);
+        if (insideDialogBox)
+        {
+            float buttonHeight = Mathf.Min(46f, (112f - (count - 1) * 6f) / count);
+            rect.sizeDelta = new Vector2(720f, buttonHeight);
+            rect.anchoredPosition = new Vector2(0f, 14f + (count - index - 1) * (buttonHeight + 6f));
+        }
+        else
+        {
+            rect.sizeDelta = new Vector2(720f, 46f);
+            rect.anchoredPosition = new Vector2(0f, 150f + (count - index - 1) * 54f);
+        }
 
         Image background = buttonObject.GetComponent<Image>();
         background.color = new Color(0.08f, 0.08f, 0.08f, 0.95f);
