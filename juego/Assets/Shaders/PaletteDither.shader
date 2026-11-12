@@ -78,10 +78,19 @@ Shader "Stylized/Palette Dither"
                 return output;
             }
 
-            // Bayer 4x4: combines two Bayer 2x2 matrices without a texture lookup.
-            float Bayer2(float2 xy)
+            static const int Bayer4x4[16] = {
+                 0,  8,  2, 10,
+                12,  4, 14,  6,
+                 3, 11,  1,  9,
+                15,  7, 13,  5
+            };
+
+            float DitherThreshold(float2 screenPosition)
             {
-                return lerp(lerp(0.0, 2.0, xy.x), lerp(3.0, 1.0, xy.x), xy.y);
+                int2 pixel = (int2)floor(screenPosition / _DitherScale);
+                int x = pixel.x % 4;
+                int y = pixel.y % 4;
+                return (Bayer4x4[y * 4 + x] + 0.5) / 16.0;
             }
 
             half4 Frag(Varyings input) : SV_Target
@@ -93,13 +102,8 @@ Shader "Stylized/Palette Dither"
                 half illumination = saturate(_Ambient + _LightStrength * diffuse * lightLuma * mainLight.shadowAttenuation);
                 half luminance = saturate(dot(albedo, half3(0.2126, 0.7152, 0.0722)) * illumination * _Exposure);
 
-                float2 pixel = floor(input.positionCS.xy / _DitherScale);
-                float2 low = pixel - 2.0 * floor(pixel * 0.5);
-                float2 high = floor(pixel * 0.5);
-                high -= 2.0 * floor(high * 0.5);
-                float threshold = (4.0 * Bayer2(low) + Bayer2(high) + 0.5) / 16.0;
-
                 float level = luminance * 3.0;
+                float threshold = DitherThreshold(input.positionCS.xy);
                 int index = min((int)floor(level) + (frac(level) > threshold ? 1 : 0), 3);
                 half3 color = index == 0 ? _Darkest.rgb :
                               index == 1 ? _Dark.rgb :

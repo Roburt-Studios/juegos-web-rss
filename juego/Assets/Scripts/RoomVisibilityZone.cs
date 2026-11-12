@@ -23,6 +23,6 @@ public class RoomVisibilityZone : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (visibilityController != null && other.GetComponentInParent<PlayerMovment>() != null)
-            visibilityController.TransitionToRoom(roomLayer);
+            visibilityController.ShowRoom(roomLayer);
     }
 }

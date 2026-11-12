@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System;
 using UnityEngine;
 
 [RequireComponent(typeof(CanvasGroup))]
@@ -20,13 +19,11 @@ public class CanvasFader : MonoBehaviour
     {
         public float targetAlpha;
         public float duration;
-        public Action onComplete;
 
-        public FadeRequest(float targetAlpha, float duration, Action onComplete)
+        public FadeRequest(float targetAlpha, float duration)
         {
             this.targetAlpha = targetAlpha;
             this.duration = duration;
-            this.onComplete = onComplete;
         }
     }
 
@@ -66,21 +63,7 @@ public class CanvasFader : MonoBehaviour
 
     public void FadeTo(float targetAlpha, float duration)
     {
-        EnqueueFade(targetAlpha, duration, null);
-    }
-
-    public IEnumerator FadeToAndWait(float targetAlpha, float duration)
-    {
-        bool completed = false;
-        EnqueueFade(targetAlpha, duration, () => completed = true);
-
-        while (!completed)
-            yield return null;
-    }
-
-    private void EnqueueFade(float targetAlpha, float duration, Action onComplete)
-    {
-        fadeQueue.Enqueue(new FadeRequest(Mathf.Clamp01(targetAlpha), Mathf.Max(0f, duration), onComplete));
+        fadeQueue.Enqueue(new FadeRequest(Mathf.Clamp01(targetAlpha), Mathf.Max(0f, duration)));
 
         if (queueCoroutine == null)
             queueCoroutine = StartCoroutine(ProcessQueueRoutine());
@@ -92,7 +75,6 @@ public class CanvasFader : MonoBehaviour
         {
             FadeRequest request = fadeQueue.Dequeue();
             yield return FadeRoutine(request.targetAlpha, request.duration);
-            request.onComplete?.Invoke();
         }
 
         queueCoroutine = null;

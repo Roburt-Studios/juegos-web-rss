@@ -17010,8 +17010,6 @@ MonoBehaviour:
   initialRoom:
     serializedVersion: 2
     m_Bits: 256
-  transitionFader: {fileID: 1766555681}
-  fadeDuration: 0.35
 --- !u!114 &773529705
 MonoBehaviour:
   m_ObjectHideFlags: 0
