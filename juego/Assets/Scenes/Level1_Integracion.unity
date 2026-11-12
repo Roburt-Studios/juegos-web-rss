@@ -16910,6 +16910,7 @@ GameObject:
   - component: {fileID: 773529703}
   - component: {fileID: 773529702}
   - component: {fileID: 773529705}
+  - component: {fileID: 773529706}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -16991,6 +16992,26 @@ Transform:
   m_Children: []
   m_Father: {fileID: 587913738}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &773529706
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 773529701}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 867132a158134bc0a24ea04569ab0b31, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::RoomVisibilityController
+  roomLayers:
+    serializedVersion: 2
+    m_Bits: 3840
+  initialRoom:
+    serializedVersion: 2
+    m_Bits: 256
+  transitionFader: {fileID: 1766555681}
+  fadeDuration: 0.35
 --- !u!114 &773529705
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -32731,9 +32752,9 @@ MonoBehaviour:
   followSpeed: 5
   cam: {fileID: 773529703}
   zoomSpeed: 18
-  initialZoom: 25
+  initialZoom: 18
   minZoom: 4
-  maxZoom: 50
+  maxZoom: 22
   pivot: {fileID: 587913738}
   rotationSpeed: 0.25
   rotationSmoothness: 5
@@ -36318,8 +36339,8 @@ CanvasGroup:
   m_GameObject: {fileID: 1766555680}
   m_Enabled: 1
   m_Alpha: 0
-  m_Interactable: 1
-  m_BlocksRaycasts: 1
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
 --- !u!114 &1766555683
 MonoBehaviour:
@@ -36382,7 +36403,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 0
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 100
   m_TargetDisplay: 0
 --- !u!224 &1766555686
 RectTransform:
@@ -36393,7 +36414,7 @@ RectTransform:
   m_GameObject: {fileID: 1766555680}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1111591103}

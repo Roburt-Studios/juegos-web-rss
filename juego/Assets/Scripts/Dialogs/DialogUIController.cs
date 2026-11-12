@@ -1,6 +1,6 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,7 +14,8 @@ public class DialogUIController : MonoBehaviour
     public float textSpeed = 0.05f;
     public bool showInstantly = false;
 
-    [SerializeField] private char _redTextColorPrefix = '#';
+    [SerializeField]
+    private char _redTextColorPrefix = '#';
     private readonly List<GameObject> optionButtons = new();
     private Coroutine textCoroutine;
     private string fullText = "";
@@ -34,7 +35,7 @@ public class DialogUIController : MonoBehaviour
     {
         if (dialogCanvas == null)
         {
-            Debug.LogError("DialogUIController: falta Canvas o Initialize.");
+            Debug.LogError("DialogUIController: falt canvas o Initialize.");
             return;
         }
 
@@ -58,10 +59,17 @@ public class DialogUIController : MonoBehaviour
             {
                 int selectedIndex = i;
                 Dialog.Option option = node.options[i];
-                string label = option.difficulty > 0
-                    ? $"[2d6 ≥ {option.difficulty}] {option.text}"
-                    : option.text;
-                CreateActionButton(label, () => manager.SelectChoice(selectedIndex), i, node.options.Count, true);
+                string label =
+                    option.difficulty > 0
+                        ? $"[2d6 ≥ {option.difficulty}] {option.text}"
+                        : option.text;
+                CreateActionButton(
+                    label,
+                    () => manager.SelectChoice(selectedIndex),
+                    i,
+                    node.options.Count,
+                    true
+                );
             }
             return;
         }
@@ -81,7 +89,6 @@ public class DialogUIController : MonoBehaviour
             dialogText.text = text;
         else
             textCoroutine = StartCoroutine(AnimateText(text));
-
     }
 
     public void ShowRollPrompt(int difficulty)
@@ -102,16 +109,33 @@ public class DialogUIController : MonoBehaviour
     public void ShowRollResult(DiceRoll roll, int difficulty, bool success)
     {
         ClearOptions();
-        fullText = $"Tirada: {roll.FirstDie} + {roll.SecondDie} = {roll.Total} / {difficulty}. " +
-            (success ? "Éxito." : "Fallo.");
+        fullText =
+            $"Tirada: {roll.FirstDie} + {roll.SecondDie} = {roll.Total} / {difficulty}. "
+            + (success ? "Éxito." : "Fallo.");
         dialogText.color = Color.white;
         dialogText.text = fullText;
-        nextButton.gameObject.SetActive(true);
+        nextButton.gameObject.SetActive(false);
+        CreateActionButton("Siguiente", manager.AdvanceDialog, 0, 1, true);
+        RectTransform buttonRect = (RectTransform)optionButtons[0].transform;
+        buttonRect.sizeDelta = new Vector2(720f, 32f);
+        buttonRect.anchoredPosition = new Vector2(0f, 6f);
     }
 
-    private void CreateActionButton(string label, Action action, int index, int count, bool insideDialogBox = false)
+    private void CreateActionButton(
+        string label,
+        Action action,
+        int index,
+        int count,
+        bool insideDialogBox = false
+    )
     {
-        var buttonObject = new GameObject($"Respuesta {index + 1}", typeof(RectTransform), typeof(Image), typeof(Button));
+        //TODO: Cambiar esto a un prefab
+        var buttonObject = new GameObject(
+            $"Respuesta {index + 1}",
+            typeof(RectTransform),
+            typeof(Image),
+            typeof(Button)
+        );
         buttonObject.transform.SetParent(transform, false);
         buttonObject.layer = gameObject.layer;
 
@@ -123,7 +147,10 @@ public class DialogUIController : MonoBehaviour
         {
             float buttonHeight = Mathf.Min(46f, (112f - (count - 1) * 6f) / count);
             rect.sizeDelta = new Vector2(720f, buttonHeight);
-            rect.anchoredPosition = new Vector2(0f, 14f + (count - index - 1) * (buttonHeight + 6f));
+            rect.anchoredPosition = new Vector2(
+                0f,
+                14f + (count - index - 1) * (buttonHeight + 6f)
+            );
         }
         else
         {
