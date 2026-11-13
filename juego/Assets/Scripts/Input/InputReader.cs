@@ -10,6 +10,7 @@ public class InputReader : ScriptableObject, PlayerControls.IPlayerActions
     // Evento a los que se suscriben los componentes
     public event Action<Vector2> MoveEvent;
     public event Action InteractEvent;
+    public event Action InventoryEvent;
 
     private void OnEnable()
     {
@@ -49,5 +50,11 @@ public class InputReader : ScriptableObject, PlayerControls.IPlayerActions
     {
         if (context.performed)
             InteractEvent?.Invoke();
+    }
+
+    public void OnInventory(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+            InventoryEvent?.Invoke();
     }
 }

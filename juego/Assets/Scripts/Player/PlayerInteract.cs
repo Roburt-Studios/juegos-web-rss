@@ -12,10 +12,6 @@ public class PlayerInteract : MonoBehaviour
     [SerializeField]
     private LayerMask mask;
 
-    private bool canInteract;
-    private IInteractable interactableObject;
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         if (proximityTrigger == null)
@@ -24,10 +20,42 @@ public class PlayerInteract : MonoBehaviour
 
     void Interact()
     {
-        if (!canInteract)
+        if (proximityTrigger == null)
             return;
-        Debug.Log("Interacting");
-        interactableObject.Interacted();
+
+        Vector3 origin = proximityTrigger.transform.TransformPoint(proximityTrigger.center);
+        Vector3 scale = proximityTrigger.transform.lossyScale;
+        float radius = proximityTrigger.radius * Mathf.Max(Mathf.Abs(scale.x), Mathf.Abs(scale.y), Mathf.Abs(scale.z));
+        Collider[] nearby = Physics.OverlapSphere(origin, radius, mask, QueryTriggerInteraction.Collide);
+
+        IInteractable closest = null;
+        float closestDistance = float.MaxValue;
+        foreach (Collider candidate in nearby)
+        {
+            if (!candidate.CompareTag("Interactable"))
+                continue;
+
+            IInteractable interactable = candidate.GetComponent<IInteractable>();
+            if (interactable == null)
+                continue;
+
+            Vector3 point = candidate.ClosestPoint(origin);
+            Vector3 direction = point - origin;
+            float distance = direction.magnitude;
+            if (distance >= closestDistance)
+                continue;
+
+            if (distance > 0.01f &&
+                Physics.Raycast(origin, direction, out RaycastHit hit, distance + 0.05f,
+                    Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore) &&
+                hit.collider != candidate)
+                continue;
+
+            closest = interactable;
+            closestDistance = distance;
+        }
+
+        closest?.Interacted();
     }
 
     void OnEnable()
@@ -40,31 +68,4 @@ public class PlayerInteract : MonoBehaviour
         input.InteractEvent -= Interact;
     }
 
-    void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("Interactable"))
-        {
-            // Chaeck de que no se hagan colisiones atravesando paredes
-            Vector3 interactableDir = other.transform.position - transform.position;
-            RaycastHit hit;
-            if (Physics.Raycast(transform.position, interactableDir, out hit, Mathf.Infinity, mask))
-            {
-                if (hit.transform.CompareTag("Interactable"))
-                {
-                    Debug.Log("Can interact with " + hit.transform.gameObject.name);
-                    canInteract = true;
-                    interactableObject = hit.transform.gameObject.GetComponent<IInteractable>();
-                }
-            }
-        }
-    }
-
-    void OnTriggerExit(Collider other)
-    {
-        if (other.CompareTag("Interactable"))
-        {
-            canInteract = false;
-            interactableObject = null;
-        }
-    }
 }

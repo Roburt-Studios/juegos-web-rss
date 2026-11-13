@@ -20,10 +20,16 @@ namespace Patterns.ServiceLocator
             else
             {
                 Destroy(this);
+                return;
             }
 
             // Registro de servicios
             this.Register<DialogManager>(GetComponent<DialogManager>());
+            InventoryService inventory = GetComponent<InventoryService>();
+            if (inventory == null)
+                this.Register<InventoryService>();
+            else
+                this.Register(inventory);
         }
 
         void Start() { }
