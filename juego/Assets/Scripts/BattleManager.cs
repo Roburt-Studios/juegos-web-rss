@@ -1,4 +1,5 @@
 
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -142,6 +143,7 @@ public class BattleManager : MonoBehaviour
         if (AllDefeated(enemies))
         {
             EndBattle(true);
+            Debug.Log("Enemigos derrotados");
             return;
         }
 
@@ -205,6 +207,7 @@ public class BattleManager : MonoBehaviour
         if (AllDefeated(party))
         {
             EndBattle(false);
+            Debug.Log("Derrota del equipo.");
             yield break;
         }
 

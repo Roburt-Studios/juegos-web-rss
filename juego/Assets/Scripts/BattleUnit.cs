@@ -1,5 +1,6 @@
 
 using UnityEngine;
+using System.Collections;
 
 public class BattleUnit : MonoBehaviour
 {
@@ -13,10 +14,14 @@ public class BattleUnit : MonoBehaviour
     public bool IsAlive => currentHP > 0;
 
     private SpriteRenderer spriteRenderer;
+    private Vector3 originalPosition;
+
+    private Coroutine damageCoroutine;
 
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
+        originalPosition = transform.position;
         currentHP = Mathf.Clamp(currentHP, 0, maxHP);
     }
 
@@ -50,7 +55,52 @@ public class BattleUnit : MonoBehaviour
 
     private void UpdateAppearance()
     {
-        if (spriteRenderer != null && !IsAlive)
+        if (spriteRenderer == null)
+            return;
+
+        if (!IsAlive)
+        {
+            if (damageCoroutine != null)
+            {
+                StopCoroutine(damageCoroutine);
+                damageCoroutine = null;
+            }
+
+            transform.position = originalPosition;
             spriteRenderer.color = Color.gray;
+            return;
+        }
+
+        if (damageCoroutine != null)
+            StopCoroutine(damageCoroutine);
+
+        damageCoroutine = StartCoroutine(DamageEffect());
     }
+
+    private IEnumerator DamageEffect()
+    {
+        spriteRenderer.color = Color.red;
+
+        float duration = 0.3f;
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            float x = Mathf.Sin(elapsed * 60f) * 0.08f;
+
+            transform.position =
+                originalPosition + Vector3.right * x;
+
+            elapsed += Time.deltaTime;
+
+            yield return null;
+        }
+
+        transform.position = originalPosition;
+        spriteRenderer.color = Color.white;
+
+        damageCoroutine = null;
+    }
+
+
 }
