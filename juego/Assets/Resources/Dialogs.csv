@@ -10,3 +10,6 @@ D2;ayuda;line;enemy;Toma el pasaje oriental tras la cripta inundada. Apresúrate
 D2;reaccion;line;enemy;Tranquiliza tu hierro, proscrito. Toma el pasaje oriental tras la cripta inundada, pero apresúrate: las bestias del foso ya olieron sangre fresca.;despedida
 D2;amenaza_fallida;line;enemy;Esta bravuconería no te llevará lejos. Prepárate para morir.;;;;combate
 D2;despedida;line;player;Si vive cuando lo encuentre, consideraré saldada tu deuda con la vida.;
+
+
+DFailedDoor;inicio;line;player;Necesito una llave para abrir esto.;

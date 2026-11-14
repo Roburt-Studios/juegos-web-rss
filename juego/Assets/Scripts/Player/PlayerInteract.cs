@@ -8,9 +8,22 @@ public class PlayerInteract : MonoBehaviour
     [Header("Collider de proximidad")]
     [SerializeField]
     private SphereCollider proximityTrigger;
+    private Collider[] nearby;
 
     [SerializeField]
     private LayerMask mask;
+
+    [Header("Prefab con la imagen de la letra <e> para el aviso de interacción")]
+    [SerializeField]
+    private GameObject interactWarning;
+
+    [SerializeField]
+    private Transform cameraTransform;
+
+    // Parametros para el calculo de los candidatosVector3 origin
+    private Vector3 origin;
+    private Vector3 scale;
+    private float radius;
 
     void Start()
     {
@@ -18,15 +31,32 @@ public class PlayerInteract : MonoBehaviour
             Debug.LogError("PlayerInteract: Proximity collider not set");
     }
 
+    void Update()
+    {
+        // Busqueda de los candidatos a interacción
+        origin = proximityTrigger.transform.TransformPoint(proximityTrigger.center);
+        scale = proximityTrigger.transform.lossyScale;
+        radius =
+            proximityTrigger.radius
+            * Mathf.Max(Mathf.Abs(scale.x), Mathf.Abs(scale.y), Mathf.Abs(scale.z));
+
+        nearby = Physics.OverlapSphere(origin, radius, mask, QueryTriggerInteraction.Collide);
+
+        if (nearby.Length > 0)
+        {
+            interactWarning.SetActive(true);
+            interactWarning.transform.LookAt(cameraTransform, Vector3.up);
+        }
+        else
+        {
+            interactWarning.SetActive(false);
+        }
+    }
+
     void Interact()
     {
         if (proximityTrigger == null)
             return;
-
-        Vector3 origin = proximityTrigger.transform.TransformPoint(proximityTrigger.center);
-        Vector3 scale = proximityTrigger.transform.lossyScale;
-        float radius = proximityTrigger.radius * Mathf.Max(Mathf.Abs(scale.x), Mathf.Abs(scale.y), Mathf.Abs(scale.z));
-        Collider[] nearby = Physics.OverlapSphere(origin, radius, mask, QueryTriggerInteraction.Collide);
 
         IInteractable closest = null;
         float closestDistance = float.MaxValue;
@@ -45,10 +75,18 @@ public class PlayerInteract : MonoBehaviour
             if (distance >= closestDistance)
                 continue;
 
-            if (distance > 0.01f &&
-                Physics.Raycast(origin, direction, out RaycastHit hit, distance + 0.05f,
-                    Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore) &&
-                hit.collider != candidate)
+            if (
+                distance > 0.01f
+                && Physics.Raycast(
+                    origin,
+                    direction,
+                    out RaycastHit hit,
+                    distance + 0.05f,
+                    Physics.DefaultRaycastLayers,
+                    QueryTriggerInteraction.Ignore
+                )
+                && hit.collider != candidate
+            )
                 continue;
 
             closest = interactable;
@@ -67,5 +105,4 @@ public class PlayerInteract : MonoBehaviour
     {
         input.InteractEvent -= Interact;
     }
-
 }
