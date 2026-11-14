@@ -8,26 +8,92 @@ public class PlayerInteract : MonoBehaviour
     [Header("Collider de proximidad")]
     [SerializeField]
     private SphereCollider proximityTrigger;
+    private Collider[] nearby;
 
     [SerializeField]
     private LayerMask mask;
 
-    private bool canInteract;
-    private IInteractable interactableObject;
+    [Header("Prefab con la imagen de la letra <e> para el aviso de interacción")]
+    [SerializeField]
+    private GameObject interactWarning;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    [SerializeField]
+    private Transform cameraTransform;
+
+    // Parametros para el calculo de los candidatosVector3 origin
+    private Vector3 origin;
+    private Vector3 scale;
+    private float radius;
+
     void Start()
     {
         if (proximityTrigger == null)
             Debug.LogError("PlayerInteract: Proximity collider not set");
     }
 
+    void Update()
+    {
+        // Busqueda de los candidatos a interacción
+        origin = proximityTrigger.transform.TransformPoint(proximityTrigger.center);
+        scale = proximityTrigger.transform.lossyScale;
+        radius =
+            proximityTrigger.radius
+            * Mathf.Max(Mathf.Abs(scale.x), Mathf.Abs(scale.y), Mathf.Abs(scale.z));
+
+        nearby = Physics.OverlapSphere(origin, radius, mask, QueryTriggerInteraction.Collide);
+
+        if (nearby.Length > 0)
+        {
+            interactWarning.SetActive(true);
+            interactWarning.transform.LookAt(cameraTransform, Vector3.up);
+        }
+        else
+        {
+            interactWarning.SetActive(false);
+        }
+    }
+
     void Interact()
     {
-        if (!canInteract)
+        if (proximityTrigger == null)
             return;
-        Debug.Log("Interacting");
-        interactableObject.Interacted();
+
+        IInteractable closest = null;
+        float closestDistance = float.MaxValue;
+        foreach (Collider candidate in nearby)
+        {
+            if (!candidate.CompareTag("Interactable"))
+                continue;
+
+            IInteractable interactable = candidate.GetComponent<IInteractable>();
+            if (interactable == null)
+                continue;
+
+            Vector3 point = candidate.ClosestPoint(origin);
+            Vector3 direction = point - origin;
+            float distance = direction.magnitude;
+            if (distance >= closestDistance)
+                continue;
+
+            if (
+                distance > 0.01f
+                && Physics.Raycast(
+                    origin,
+                    direction,
+                    out RaycastHit hit,
+                    distance + 0.05f,
+                    Physics.DefaultRaycastLayers,
+                    QueryTriggerInteraction.Ignore
+                )
+                && hit.collider != candidate
+            )
+                continue;
+
+            closest = interactable;
+            closestDistance = distance;
+        }
+
+        closest?.Interacted();
     }
 
     void OnEnable()
@@ -38,33 +104,5 @@ public class PlayerInteract : MonoBehaviour
     void OnDisable()
     {
         input.InteractEvent -= Interact;
-    }
-
-    void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("Interactable"))
-        {
-            // Chaeck de que no se hagan colisiones atravesando paredes
-            Vector3 interactableDir = other.transform.position - transform.position;
-            RaycastHit hit;
-            if (Physics.Raycast(transform.position, interactableDir, out hit, Mathf.Infinity, mask))
-            {
-                if (hit.transform.CompareTag("Interactable"))
-                {
-                    Debug.Log("Can interact with " + hit.transform.gameObject.name);
-                    canInteract = true;
-                    interactableObject = hit.transform.gameObject.GetComponent<IInteractable>();
-                }
-            }
-        }
-    }
-
-    void OnTriggerExit(Collider other)
-    {
-        if (other.CompareTag("Interactable"))
-        {
-            canInteract = false;
-            interactableObject = null;
-        }
     }
 }

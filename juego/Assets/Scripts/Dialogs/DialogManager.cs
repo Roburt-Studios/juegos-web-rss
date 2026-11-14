@@ -2,191 +2,226 @@ using System;
 using System.Collections.Generic;
 using Patterns.ServiceLocator;
 using Patterns.ServiceLocator.Interfaces;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class DialogManager : MonoBehaviour, IService
 {
     [Serializable]
     private struct CharacterSpriteEntry
     {
-        [Tooltip("Identificador del personaje tal y como aparece en los diálogos.")]
         public string characterId;
-
         public Sprite sprite;
     }
 
+    [SerializeField] private List<CharacterSpriteEntry> characterSprites = new();
+    private readonly Dictionary<string, Sprite> charactersSpriteMap = new();
     private Dialog currentDialog;
-    private int currentLineIndex = 0;
-    private bool inDialog = false;
-    private float lastAdvanceTime = 0f;
-    private float advanceCooldown = 0.5f; // Segundos de espera entre clicks
+    private Dialog.Node currentNode;
+    private Dialog.Option pendingRollOption;
+    private string pendingRollNextId;
+    private DiceManager diceManager;
+    private bool inDialog;
+    private float lastAdvanceTime;
+    private int lastCompletionFrame = -1;
+    private const float AdvanceCooldown = 0.5f;
 
     public DialogUIController uiController;
-
-    [SerializeField]
-    [Tooltip("Sprites asociados a cada identificador de personaje.")]
-    private List<CharacterSpriteEntry> characterSprites = new();
-
-    private readonly Dictionary<string, Sprite> charactersSpriteMap = new();
-
     public DialogDB dialogDB;
-
-    public EventHandler<String> OnDialogEnd;
-
+    public EventHandler<string> OnDialogEnd;
     public InputReader input;
 
-    private void Awake()
-    {
-        RebuildCharacterSpriteMap();
-    }
-
-    private void OnValidate()
-    {
-        RebuildCharacterSpriteMap();
-    }
+    private void Awake() => RebuildCharacterSpriteMap();
+    private void OnValidate() => RebuildCharacterSpriteMap();
 
     public void Initialize()
     {
-        // Inicializar la base de datos de diálogos
         dialogDB = new DialogDB();
         dialogDB.Initialize();
 
-        uiController = GameObject.FindFirstObjectByType<DialogUIController>();
-        uiController.Initialize();
-
-        // Validar que uiController esté asignado
         if (uiController == null)
-        {
-            Debug.LogError(
-                "DialogManager: uiController no está asignado. Asigna el DialogUIController en el Inspector."
-            );
-        }
+            uiController = FindFirstObjectByType<DialogUIController>();
+
+        if (uiController == null)
+            Debug.LogError("DialogManager: falta DialogUIController.");
+        else
+            uiController.Initialize(this);
     }
 
-    public bool TryGetCharacterSprite(string characterId, out Sprite sprite)
-    {
-        return charactersSpriteMap.TryGetValue(characterId, out sprite);
-    }
+    public bool TryGetCharacterSprite(string characterId, out Sprite sprite) =>
+        charactersSpriteMap.TryGetValue(characterId, out sprite);
 
     private void RebuildCharacterSpriteMap()
     {
         charactersSpriteMap.Clear();
-
         foreach (CharacterSpriteEntry entry in characterSprites)
         {
-            if (string.IsNullOrWhiteSpace(entry.characterId) || entry.sprite == null)
-                continue;
-
-            charactersSpriteMap[entry.characterId] = entry.sprite;
+            if (!string.IsNullOrWhiteSpace(entry.characterId) && entry.sprite != null)
+                charactersSpriteMap[entry.characterId] = entry.sprite;
         }
     }
 
     private void Update()
     {
-        if (inDialog && Keyboard.current != null && Mouse.current != null)
-        {
-            if (
-                Keyboard.current.tabKey.wasPressedThisFrame
-                || Mouse.current.leftButton.wasPressedThisFrame
-            )
-            {
-                AdvanceDialog();
-            }
-        }
+        if (!inDialog || Keyboard.current == null)
+            return;
+
+        if (Keyboard.current.tabKey.wasPressedThisFrame ||
+            (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame))
+            AdvanceDialog();
     }
 
     public void StartDialog(string dialogId)
     {
-        input.DisableAllInput();
-        // Validar que uiController esté asignado
-
-        if (uiController == null)
-        {
-            //Debug.LogError("DialogManager: No se puede iniciar diálogo. uiController no está asignado.");
+        if (inDialog || uiController == null || dialogDB == null)
             return;
-        }
 
         currentDialog = dialogDB.GetDialog(dialogId);
-
-        if (currentDialog == null)
-        {
+        if (currentDialog == null || !currentDialog.TryGetNode(currentDialog.startNodeId, out currentNode))
             return;
-        }
 
+        CancelInvoke(nameof(RestoreGameplayControl));
+        CancelInvoke(nameof(UnlockPlayer));
+        input.DisableAllInput();
         inDialog = true;
-        currentLineIndex = 0;
-        ShowCurrentLine();
+        pendingRollOption = null;
+        pendingRollNextId = null;
+        lastCompletionFrame = -1;
+        lastAdvanceTime = Time.time;
+        ShowCurrentNode();
     }
 
     public void AdvanceDialog()
     {
-        if (!inDialog || currentDialog == null)
+        if (!inDialog || currentNode == null || Time.frameCount == lastCompletionFrame)
             return;
 
-        // Si ha pasado muy poco tiempo desde el último click, ignoramos este
-        if (Time.time - lastAdvanceTime < advanceCooldown)
+        if (uiController.CompleteCurrentText())
+        {
+            lastCompletionFrame = Time.frameCount;
+            lastAdvanceTime = Time.time - AdvanceCooldown;
+            return;
+        }
+
+        if (Time.time - lastAdvanceTime < AdvanceCooldown)
             return;
 
         lastAdvanceTime = Time.time;
-
-        currentLineIndex++;
-
-        if (currentLineIndex < currentDialog.GetLineCount())
+        if (pendingRollNextId != null)
         {
-            ShowCurrentLine();
+            string nextId = pendingRollNextId;
+            pendingRollNextId = null;
+            GoToNode(nextId);
+            return;
+        }
+
+        if (currentNode.isChoice)
+            return;
+
+        if (string.Equals(currentNode.tag, "combate", StringComparison.OrdinalIgnoreCase))
+        {
+            FinishDialog(false);
+            SceneManager.LoadScene("CombatScene");
+            return;
+        }
+
+        GoToNode(currentNode.nextId);
+    }
+
+    public void SelectChoice(int index)
+    {
+        if (!inDialog || currentNode == null || !currentNode.isChoice ||
+            index < 0 || index >= currentNode.options.Count ||
+            Time.frameCount == lastCompletionFrame)
+            return;
+
+        if (uiController.CompleteCurrentText())
+        {
+            lastCompletionFrame = Time.frameCount;
+            return;
+        }
+
+        Dialog.Option option = currentNode.options[index];
+        lastAdvanceTime = Time.time;
+        if (option.difficulty > 0)
+        {
+            pendingRollOption = option;
+            uiController.ShowRollPrompt(option.difficulty);
         }
         else
         {
-            EndDialog();
+            GoToNode(option.nextId);
         }
     }
 
-    private void ShowCurrentLine()
+    public void RollForChoice()
     {
-        if (currentDialog != null && uiController != null)
+        if (!inDialog || pendingRollOption == null)
+            return;
+
+        if (diceManager == null)
+            diceManager = GetComponent<DiceManager>();
+        if (diceManager == null)
+            diceManager = gameObject.AddComponent<DiceManager>();
+
+        DiceRoll roll = diceManager.Roll();
+        int difficulty = pendingRollOption.difficulty;
+        bool success = roll.Total >= difficulty;
+        pendingRollNextId = success ? pendingRollOption.nextId : pendingRollOption.failureNextId;
+        pendingRollOption = null;
+        lastCompletionFrame = Time.frameCount;
+        lastAdvanceTime = Time.time;
+        uiController.ShowRollResult(roll, difficulty, success);
+    }
+
+    private void GoToNode(string nodeId)
+    {
+        if (string.IsNullOrEmpty(nodeId))
         {
-            Tuple<string, string> dialogInstance = currentDialog.lines[currentLineIndex];
-            uiController.ShowText(
-                dialogInstance.Item2,
-                charactersSpriteMap[dialogInstance.Item1],
-                currentLineIndex,
-                currentDialog.GetLineCount()
-            );
+            EndDialog();
+            return;
         }
+
+        if (!currentDialog.TryGetNode(nodeId, out currentNode))
+        {
+            Debug.LogError($"Diálogo {currentDialog.id}: nodo {nodeId} no encontrado.");
+            EndDialog();
+            return;
+        }
+
+        ShowCurrentNode();
+    }
+
+    private void ShowCurrentNode()
+    {
+        charactersSpriteMap.TryGetValue(currentNode.characterId, out Sprite sprite);
+        uiController.ShowNode(currentNode, sprite);
     }
 
     public void EndDialog()
     {
+        FinishDialog(true);
+    }
+
+    private void FinishDialog(bool restoreInput)
+    {
+        if (!inDialog)
+            return;
+
+        string finishedDialogId = currentDialog.id;
         inDialog = false;
-        currentLineIndex = 0;
-
-        if (uiController != null)
-        {
-            uiController.HideUI();
-        }
-
-        // Esperamos un momento antes de devolver el control para que el
-        // click que cerró el diálogo no haga que el jugador dispare o salte.
-        Invoke("RestoreGameplayControl", 0.1f);
-        OnDialogEnd?.Invoke(this, currentDialog.id);
+        currentNode = null;
         currentDialog = null;
+        pendingRollOption = null;
+        pendingRollNextId = null;
+        uiController.HideUI();
+        if (restoreInput)
+            Invoke(nameof(RestoreGameplayControl), 0.1f);
+        OnDialogEnd?.Invoke(this, finishedDialogId);
     }
 
-    private void RestoreGameplayControl()
-    {
-        Invoke("UnlockPlayer", 0.5f);
-    }
-
-    // Retorna si actualmente está en un diálogo
-    public bool IsInDialog()
-    {
-        return inDialog;
-    }
-
-    private void UnlockPlayer()
-    {
-        input.EnableGameplayInput();
-    }
+    private void RestoreGameplayControl() => Invoke(nameof(UnlockPlayer), 0.5f);
+    private void UnlockPlayer() => input.EnableGameplayInput();
+    public bool IsInDialog() => inDialog;
 }

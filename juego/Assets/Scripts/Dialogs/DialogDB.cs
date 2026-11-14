@@ -1,67 +1,85 @@
-using System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class DialogDB
 {
-    private Dictionary<string, Dialog> dialogs = new Dictionary<string, Dialog>();
+    private readonly Dictionary<string, Dialog> dialogs = new();
 
     public void Initialize()
     {
-        LoadCSV();
-    }
-
-    void LoadCSV()
-    {
         TextAsset csvFile = Resources.Load<TextAsset>("Dialogs");
-
         if (csvFile == null)
         {
-            Debug.LogError("No se encontró el archivo de diálogos en Resources!");
+            Debug.LogError("No se encontró Resources/Dialogs.csv");
             return;
         }
-        // Aqí cambiamos el idioma de los dialogos:
 
-        // Separar por saltos de línea
         string[] rows = csvFile.text.Split('\n');
-
-        for (int i = 1; i < rows.Length; i++) // Saltamos cabecera
+        for (int i = 1; i < rows.Length; i++)
         {
             if (string.IsNullOrWhiteSpace(rows[i]))
                 continue;
 
-            // Separar por pipe
-            string[] columns = rows[i].Split(';');
-
-            if (columns.Length < 3)
-                continue;
-
-            string id = columns[0].Trim();
-            string character = columns[1].Trim();
-            string text = columns[2].Trim();
-
-            Debug.Log("id: " + id + " character: " + character + " text: " + text);
-
-            // Si el ID no existe en el diccionario, creamos un nuevo Dialog
-            if (!dialogs.ContainsKey(id))
+            string[] columns = rows[i].TrimEnd('\r').Split(';');
+            if (columns.Length < 6)
             {
-                dialogs.Add(id, new Dialog(id));
+                Debug.LogWarning($"Diálogo: fila {i + 1} incompleta.");
+                continue;
             }
 
-            // Agregamos la línea al Dialog correspondiente
-            dialogs[id].AddLine(character, text);
+            string dialogId = columns[0].Trim();
+            string nodeId = columns[1].Trim();
+            string type = columns[2].Trim().ToLowerInvariant();
+            string characterId = columns[3].Trim();
+            string text = columns[4].Trim();
+            string nextId = columns[5].Trim();
+            string failureNextId = columns.Length > 6 ? columns[6].Trim() : "";
+            int difficulty = 0;
+            if (columns.Length > 7 && !string.IsNullOrWhiteSpace(columns[7]) &&
+                (!int.TryParse(columns[7].Trim(), out difficulty) || difficulty < 2 || difficulty > 12))
+            {
+                Debug.LogWarning($"Diálogo: dificultad inválida en fila {i + 1}; debe estar entre 2 y 12.");
+                continue;
+            }
+            string tag = columns.Length > 8 ? columns[8].Trim() : "";
+
+            if (!dialogs.TryGetValue(dialogId, out Dialog dialog))
+            {
+                dialog = new Dialog(dialogId);
+                dialogs.Add(dialogId, dialog);
+            }
+
+            if (type == "option")
+            {
+                if (dialog.TryGetNode(nodeId, out Dialog.Node choice) && choice.isChoice)
+                {
+                    if (difficulty > 0 && string.IsNullOrEmpty(failureNextId))
+                        Debug.LogWarning($"Diálogo: opción con tirada sin ruta de fallo en fila {i + 1}.");
+                    else
+                        choice.options.Add(new Dialog.Option(text, nextId, failureNextId, difficulty));
+                }
+                else
+                    Debug.LogWarning($"Diálogo: opción sin nodo choice en fila {i + 1}.");
+            }
+            else if (type == "line" || type == "choice")
+            {
+                if (!dialog.AddNode(new Dialog.Node(nodeId, characterId, text, nextId, type == "choice", tag)))
+                    Debug.LogWarning($"Diálogo: nodo duplicado {dialogId}/{nodeId}.");
+            }
+            else
+            {
+                Debug.LogWarning($"Diálogo: tipo desconocido '{type}' en fila {i + 1}.");
+            }
         }
-        Debug.Log($"[Database] Cargados {dialogs.Count} diálogos grupales.");
+
+        Debug.Log($"[Database] Cargados {dialogs.Count} diálogos.");
     }
 
-    // Método para obtener un diálogo completo por su ID
     public Dialog GetDialog(string id)
     {
-        if (dialogs.TryGetValue(id, out Dialog d))
-        {
-            return d;
-        }
+        if (dialogs.TryGetValue(id, out Dialog dialog))
+            return dialog;
+
         Debug.LogWarning($"Dialog ID {id} no encontrado.");
         return null;
     }

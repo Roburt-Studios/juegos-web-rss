@@ -12,10 +12,19 @@ public class InteractableDoor : MonoBehaviour, IInteractable
     [SerializeField]
     private float duration = 1.0f;
 
+    [SerializeField]
+    private bool isConditional;
+
     private bool isOpen = false;
     private bool isMoving = false;
 
     public void Interacted()
+    {
+        if (!isConditional)
+            DoorAction();
+    }
+
+    public void DoorAction()
     {
         if (isMoving)
             return;
