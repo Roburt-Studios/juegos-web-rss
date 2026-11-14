@@ -15,7 +15,8 @@ public class DialogManager : MonoBehaviour, IService
         public Sprite sprite;
     }
 
-    [SerializeField] private List<CharacterSpriteEntry> characterSprites = new();
+    [SerializeField]
+    private List<CharacterSpriteEntry> characterSprites = new();
     private readonly Dictionary<string, Sprite> charactersSpriteMap = new();
     private Dialog currentDialog;
     private Dialog.Node currentNode;
@@ -26,6 +27,7 @@ public class DialogManager : MonoBehaviour, IService
     private float lastAdvanceTime;
     private int lastCompletionFrame = -1;
     private const float AdvanceCooldown = 0.5f;
+    private const string GiveItemTagPrefix = "darobjeto-";
 
     public DialogUIController uiController;
     public DialogDB dialogDB;
@@ -33,6 +35,7 @@ public class DialogManager : MonoBehaviour, IService
     public InputReader input;
 
     private void Awake() => RebuildCharacterSpriteMap();
+
     private void OnValidate() => RebuildCharacterSpriteMap();
 
     public void Initialize()
@@ -67,8 +70,10 @@ public class DialogManager : MonoBehaviour, IService
         if (!inDialog || Keyboard.current == null)
             return;
 
-        if (Keyboard.current.tabKey.wasPressedThisFrame ||
-            (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame))
+        if (
+            Keyboard.current.tabKey.wasPressedThisFrame
+            || (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
+        )
             AdvanceDialog();
     }
 
@@ -78,7 +83,10 @@ public class DialogManager : MonoBehaviour, IService
             return;
 
         currentDialog = dialogDB.GetDialog(dialogId);
-        if (currentDialog == null || !currentDialog.TryGetNode(currentDialog.startNodeId, out currentNode))
+        if (
+            currentDialog == null
+            || !currentDialog.TryGetNode(currentDialog.startNodeId, out currentNode)
+        )
             return;
 
         CancelInvoke(nameof(RestoreGameplayControl));
@@ -126,14 +134,53 @@ public class DialogManager : MonoBehaviour, IService
             return;
         }
 
+        if (
+            !string.IsNullOrWhiteSpace(currentNode.tag)
+            && currentNode.tag.StartsWith(GiveItemTagPrefix, StringComparison.OrdinalIgnoreCase)
+        )
+        {
+            GiveItem(currentNode.tag.Substring(GiveItemTagPrefix.Length));
+        }
+
         GoToNode(currentNode.nextId);
+    }
+
+    private void GiveItem(string itemName)
+    {
+        if (string.IsNullOrWhiteSpace(itemName))
+        {
+            Debug.LogWarning(
+                $"El dialogo  {currentDialog.id} no tiene etiqueta darobjeto con un objeto."
+            );
+            return;
+        }
+
+        InventoryItem item = Resources.Load<InventoryItem>($"InventoryItems/{itemName.Trim()}");
+        if (item == null)
+        {
+            Debug.LogWarning($"Objeto {itemName} no extiste");
+            return;
+        }
+
+        if (!ServiceLocator.Instance.GetService<InventoryService>().Add(item))
+        {
+            Debug.LogWarning($"Inventario lleno, el dialogo no pudo entregar {item.displayName}.");
+            return;
+        }
+
+        Debug.Log($"Diálogo {currentDialog.id}: recibido {item.displayName}.");
     }
 
     public void SelectChoice(int index)
     {
-        if (!inDialog || currentNode == null || !currentNode.isChoice ||
-            index < 0 || index >= currentNode.options.Count ||
-            Time.frameCount == lastCompletionFrame)
+        if (
+            !inDialog
+            || currentNode == null
+            || !currentNode.isChoice
+            || index < 0
+            || index >= currentNode.options.Count
+            || Time.frameCount == lastCompletionFrame
+        )
             return;
 
         if (uiController.CompleteCurrentText())
@@ -222,6 +269,8 @@ public class DialogManager : MonoBehaviour, IService
     }
 
     private void RestoreGameplayControl() => Invoke(nameof(UnlockPlayer), 0.5f);
+
     private void UnlockPlayer() => input.EnableGameplayInput();
+
     public bool IsInDialog() => inDialog;
 }

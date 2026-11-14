@@ -16,6 +16,7 @@ public class PlayerInteract : MonoBehaviour
     [Header("Prefab con la imagen de la letra <e> para el aviso de interacción")]
     [SerializeField]
     private GameObject interactWarning;
+    private bool warningDismissed;
 
     [SerializeField]
     private Transform cameraTransform;
@@ -42,7 +43,10 @@ public class PlayerInteract : MonoBehaviour
 
         nearby = Physics.OverlapSphere(origin, radius, mask, QueryTriggerInteraction.Collide);
 
-        if (nearby.Length > 0)
+        if (nearby.Length == 0)
+            warningDismissed = false;
+
+        if (nearby.Length > 0 && !warningDismissed)
         {
             interactWarning.SetActive(true);
             interactWarning.transform.LookAt(cameraTransform, Vector3.up);
@@ -93,7 +97,12 @@ public class PlayerInteract : MonoBehaviour
             closestDistance = distance;
         }
 
-        closest?.Interacted();
+        if (closest != null)
+        {
+            closest.Interacted();
+            warningDismissed = true;
+            interactWarning.SetActive(false);
+        }
     }
 
     void OnEnable()

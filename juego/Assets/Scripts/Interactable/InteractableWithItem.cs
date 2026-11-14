@@ -34,6 +34,7 @@ public class InteractableWithItem : MonoBehaviour, IInteractable
         if (ServiceLocator.Instance.GetService<InventoryService>().Remove(neededItem))
         {
             callbackAction?.Invoke();
+            Disable();
         }
         else
         {

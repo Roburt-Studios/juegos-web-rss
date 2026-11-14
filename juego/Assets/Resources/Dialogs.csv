@@ -6,8 +6,9 @@ D2;advertencia;line;enemy;Muchos bajan, pocos regresan enteros. Los túneles inf
 D2;pregunta;choice;enemy;;
 D2;pregunta;option;player;Dime por dónde acceder a los niveles inferiores.;ayuda
 D2;pregunta;option;player;Habla o comprobarás si mi espada aún recuerda su oficio.;reaccion;amenaza_fallida;9;
-D2;ayuda;line;enemy;Toma el pasaje oriental tras la cripta inundada. Apresúrate: las bestias del foso ya olieron sangre fresca.;despedida
-D2;reaccion;line;enemy;Tranquiliza tu hierro, proscrito. Toma el pasaje oriental tras la cripta inundada, pero apresúrate: las bestias del foso ya olieron sangre fresca.;despedida
+D2;ayuda;line;enemy;Toma el pasaje oriental tras la cripta inundada. Apresúrate: las bestias del foso ya olieron sangre fresca.;regalo
+D2;reaccion;line;enemy;Tranquiliza tu hierro, proscrito. Toma el pasaje oriental tras la cripta inundada, pero apresúrate: las bestias del foso ya olieron sangre fresca.;regalo
+D2;regalo;line;enemy;Toma esta moneda antigua. Quizá te sirva más adelante.;despedida;;;darobjeto-MonedaAntigua
 D2;amenaza_fallida;line;enemy;Esta bravuconería no te llevará lejos. Prepárate para morir.;;;;combate
 D2;despedida;line;player;Si vive cuando lo encuentre, consideraré saldada tu deuda con la vida.;
 
