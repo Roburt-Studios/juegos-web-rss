@@ -1,4 +1,5 @@
 using System.Collections;
+using Patterns.ServiceLocator;
 using UnityEngine;
 
 public class InteractableDoor : MonoBehaviour, IInteractable
@@ -13,15 +14,33 @@ public class InteractableDoor : MonoBehaviour, IInteractable
     private float duration = 1.0f;
 
     [SerializeField]
-    private bool isConditional;
+    private InventoryItem neededItem;
+
+    [SerializeField]
+    private string failedDialogID;
 
     private bool isOpen = false;
     private bool isMoving = false;
+    private bool unlocked = false;
 
     public void Interacted()
     {
-        if (!isConditional)
-            DoorAction();
+        if (isMoving)
+            return;
+
+        if (neededItem != null && !unlocked)
+        {
+            InventoryService inventory = ServiceLocator.Instance.GetService<InventoryService>();
+            if (!inventory.Remove(neededItem))
+            {
+                ServiceLocator.Instance.GetService<DialogManager>().StartDialog(failedDialogID);
+                return;
+            }
+
+            unlocked = true;
+        }
+
+        DoorAction();
     }
 
     public void DoorAction()

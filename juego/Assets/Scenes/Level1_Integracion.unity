@@ -4485,9 +4485,6 @@ PrefabInstance:
       addedObject: {fileID: 155997488}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: fdf0f1a5da8c48448baaf725955d8639, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 155997487}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: fdf0f1a5da8c48448baaf725955d8639, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 155997486}
   m_SourcePrefab: {fileID: 100100000, guid: fdf0f1a5da8c48448baaf725955d8639, type: 3}
 --- !u!4 &155997484 stripped
@@ -4514,35 +4511,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::InventoryPickup
   item: {fileID: 11400000, guid: 0de71cda29464bd6bb40f741307c580b, type: 2}
   quantity: 1
---- !u!114 &155997487
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 155997485}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 24fc9927f967303409389ac0a6a83d68, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::InteractableWithItem
   neededItem: {fileID: 11400000, guid: 5f83fe4c16044183a6d342a443ee1e0e, type: 2}
   failedDialogID: DCofre
-  callbackAction:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 155997486}
-        m_TargetAssemblyTypeName: InventoryPickup, Assembly-CSharp
-        m_MethodName: PickUpAction
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
 --- !u!65 &155997488
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -15165,9 +15135,6 @@ PrefabInstance:
       addedObject: {fileID: 665556143}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 3beacde0e7b9d8a4cbecf74f2dbee1b8, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 665556147}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 3beacde0e7b9d8a4cbecf74f2dbee1b8, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 665556146}
   m_SourcePrefab: {fileID: 100100000, guid: 3beacde0e7b9d8a4cbecf74f2dbee1b8, type: 3}
 --- !u!4 &665556141 stripped
@@ -15217,36 +15184,8 @@ MonoBehaviour:
   openRotationY: -90
   closeRotationY: 0
   duration: 0.75
-  isConditional: 1
---- !u!114 &665556147
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 665556142}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 24fc9927f967303409389ac0a6a83d68, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::InteractableWithItem
   neededItem: {fileID: 11400000, guid: 0de71cda29464bd6bb40f741307c580b, type: 2}
   failedDialogID: DPuertaPase
-  callbackAction:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 665556146}
-        m_TargetAssemblyTypeName: InteractableDoor, Assembly-CSharp
-        m_MethodName: DoorAction
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
 --- !u!1001 &669392683
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -31668,9 +31607,6 @@ PrefabInstance:
       addedObject: {fileID: 1319869953}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: bceec79bc71b0ee458a71fa256ed8417, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1319869959}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: bceec79bc71b0ee458a71fa256ed8417, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 1319869962}
   m_SourcePrefab: {fileID: 100100000, guid: bceec79bc71b0ee458a71fa256ed8417, type: 3}
 --- !u!4 &1319869951 stripped
@@ -31705,35 +31641,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -964895270735209126, guid: bceec79bc71b0ee458a71fa256ed8417, type: 3}
---- !u!114 &1319869959
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1319869952}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 24fc9927f967303409389ac0a6a83d68, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::InteractableLockedDoor
-  neededItem: {fileID: 11400000, guid: 5cafe6ce08251607fbea9024d2347456, type: 2}
-  failedDialogID: DFailedDoor
-  callbackAction:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1319869962}
-        m_TargetAssemblyTypeName: InteractableDoor, Assembly-CSharp
-        m_MethodName: DoorAction
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
 --- !u!114 &1319869962
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -31749,7 +31656,8 @@ MonoBehaviour:
   openRotationY: 180
   closeRotationY: 270
   duration: 0.75
-  isConditional: 1
+  neededItem: {fileID: 11400000, guid: 5cafe6ce08251607fbea9024d2347456, type: 2}
+  failedDialogID: DFailedDoor
 --- !u!1001 &1324315580
 PrefabInstance:
   m_ObjectHideFlags: 0
