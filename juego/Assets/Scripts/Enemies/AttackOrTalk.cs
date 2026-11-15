@@ -1,7 +1,7 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+[RequireComponent(typeof(CombatEncounter))]
 public class AttackOrTalk : MonoBehaviour, IInteractable
 {
     [Header("Interfaz")]
@@ -21,15 +21,12 @@ public class AttackOrTalk : MonoBehaviour, IInteractable
     [SerializeField]
     private InputReader input;
 
-    private bool movementWasEnabled;
-
-    private void OnEnable() { }
+    [SerializeField] private BattleManager battleManager;
+    private static AttackOrTalk menuOwner;
 
     private void OnDisable()
     {
-        attackButton?.onClick.RemoveListener(Attack);
-        talkButton?.onClick.RemoveListener(Talk);
-        cancelButton?.onClick.RemoveListener(Cancel);
+        if (menuOwner == this) CloseMenu();
     }
 
     public void Interacted()
@@ -40,6 +37,8 @@ public class AttackOrTalk : MonoBehaviour, IInteractable
             return;
         }
 
+        if (menuOwner != null) menuOwner.CloseMenu();
+        menuOwner = this;
         canvas.enabled = true;
         input.DisableAllInput();
         attackButton?.onClick.AddListener(Attack);
@@ -49,10 +48,13 @@ public class AttackOrTalk : MonoBehaviour, IInteractable
 
     public void Attack()
     {
-        Debug.Log("Attacking enemy");
-        SceneManager.LoadScene(10);
+        CombatEncounter encounter = GetComponent<CombatEncounter>();
+        if (battleManager == null || encounter == null || !battleManager.BeginEncounter(encounter))
+        {
+            Debug.LogError("AttackOrTalk: encuentro o BattleManager sin configurar.", this);
+            return;
+        }
         CloseMenu();
-        gameObject.tag = "Untagged";
     }
 
     public void Talk()
@@ -78,6 +80,8 @@ public class AttackOrTalk : MonoBehaviour, IInteractable
 
     private void CloseMenu()
     {
+        if (menuOwner != this) return;
+        menuOwner = null;
         if (canvas != null)
             canvas.enabled = false;
 

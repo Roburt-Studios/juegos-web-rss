@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections;
 using UnityEngine;
@@ -9,12 +8,22 @@ public class BattleManager : MonoBehaviour
     [Header("Combatientes")]
     public BattleUnit[] party;
     public BattleUnit[] enemies;
+    private BattleUnit[] enemySlots;
+    private CombatEncounter activeEncounter;
+    private Canvas battleCanvas;
+
+    [SerializeField]
+    private InputReader input;
+
+    [SerializeField]
+    private CameraController explorationCamera;
 
     [Header("Interfaz")]
     public BattleUI battleUI;
 
     [Header("Dados")]
-    [SerializeField] private DiceManager diceManager;
+    [SerializeField]
+    private DiceManager diceManager;
 
     private int partyIndex;
     private int targetIndex;
@@ -25,62 +34,115 @@ public class BattleManager : MonoBehaviour
     private bool defending;
 
     private BattleUnit CurrentActor =>
-        partyIndex >= 0 && partyIndex < party.Length
-            ? party[partyIndex]
-            : null;
+        partyIndex >= 0 && partyIndex < party.Length ? party[partyIndex] : null;
 
     private BattleUnit CurrentTarget =>
-        targetIndex >= 0 && targetIndex < enemies.Length
-            ? enemies[targetIndex]
-            : null;
+        targetIndex >= 0 && targetIndex < enemies.Length ? enemies[targetIndex] : null;
 
-    public bool IsSelectingTarget =>
-        pendingAction != PendingAction.None;
+    public bool IsSelectingTarget => pendingAction != PendingAction.None;
 
     private enum PendingAction
     {
         None,
         Attack,
-        Special
+        Special,
     }
 
     private PendingAction pendingAction = PendingAction.None;
-
 
     private void Start()
     {
         if (diceManager == null)
             diceManager = GetComponent<DiceManager>();
 
-        if (battleUI == null || diceManager == null ||
-            party == null || party.Length == 0 ||
-            enemies == null || enemies.Length == 0)
+        if (
+            battleUI == null
+            || diceManager == null
+            || party == null
+            || party.Length == 0
+            || enemies == null
+            || enemies.Length == 0
+        )
         {
-            Debug.LogError(
-                "UI, dados, aliados y enemigos sin asignar"
-            );
+            Debug.LogError("UI, dados, aliados y enemigos sin asignar");
             enabled = false;
             return;
         }
 
         battleUI.Initialize(this);
+        enemySlots = (BattleUnit[])enemies.Clone();
+        battleCanvas = battleUI.GetComponent<Canvas>();
+        if (battleCanvas != null)
+            battleCanvas.enabled = false;
+    }
 
-        partyIndex = FindAlivePartyMember(0);
-        targetIndex = FindAliveEnemy(0);
+    public bool BeginEncounter(CombatEncounter encounter)
+    {
+        if (activeEncounter != null || encounter == null || !encounter.IsAvailable)
+            return false;
 
-        if (partyIndex < 0 || targetIndex < 0)
+        CombatEncounter.Opponent[] opponents = encounter.Opponents;
+        if (
+            opponents == null
+            || opponents.Length == 0
+            || opponents.Length > enemySlots.Length
+            || Array.Exists(opponents, opponent => opponent == null)
+        )
         {
-            EndBattle(partyIndex >= 0);
-            return;
+            Debug.LogError(
+                "El encuentro necesita entre 1 y " + enemySlots.Length + " enemigos.",
+                encounter
+            );
+            return false;
         }
 
+        for (int i = 0; i < enemySlots.Length; i++)
+        {
+            bool used = i < opponents.Length;
+            enemySlots[i].gameObject.SetActive(used);
+            if (!used)
+                continue;
+            CombatEncounter.Opponent opponent = opponents[i];
+            enemySlots[i]
+                .Initialize(
+                    opponent.unitName,
+                    opponent.maxHP,
+                    opponent.defense,
+                    opponent.attackPower,
+                    opponent.skillPower
+                );
+        }
+
+        enemies = new BattleUnit[opponents.Length];
+        Array.Copy(enemySlots, enemies, opponents.Length);
+        activeEncounter = encounter;
+        battleEnded = false;
+        defending = false;
+        potionAvailable = true;
+        pendingAction = PendingAction.None;
+        partyIndex = FindAlivePartyMember(0);
+        targetIndex = FindAliveEnemy(0);
+        if (partyIndex < 0)
+        {
+            EndBattle(false);
+            return true;
+        }
+
+        if (input != null)
+            input.DisableAllInput();
+        if (explorationCamera != null)
+            explorationCamera.enabled = false;
+        if (battleCanvas != null)
+            battleCanvas.enabled = true;
         playerTurn = true;
         RefreshUI("¡Comienza el combate!");
+        return true;
     }
 
     public void Attack()
     {
-        if (!CanPlayerAct()) return;
+        if (!CanPlayerAct())
+            return;
 
         if (pendingAction == PendingAction.None)
         {
@@ -95,7 +157,8 @@ public class BattleManager : MonoBehaviour
 
     public void UseSpecial()
     {
-        if (!CanPlayerAct()) return;
+        if (!CanPlayerAct())
+            return;
 
         if (pendingAction == PendingAction.None)
         {
@@ -120,12 +183,7 @@ public class BattleManager : MonoBehaviour
 
         if (pendingAction == PendingAction.Attack)
         {
-            message = DealPlayerDamage(
-                actor,
-                target,
-                actor.attackPower,
-                "ataca a"
-            );
+            message = DealPlayerDamage(actor, target, actor.attackPower, "ataca a");
         }
         else if (pendingAction == PendingAction.Special)
         {
@@ -154,7 +212,8 @@ public class BattleManager : MonoBehaviour
         float multiplier = skill.AttackPower;
 
         bool critic = UnityEngine.Random.Range(0, 100) < skill.Critic;
-        if (critic) multiplier *= 1.5f;
+        if (critic)
+            multiplier *= 1.5f;
 
         int baseDamage = Mathf.RoundToInt(actor.skillPower * multiplier);
 
@@ -174,16 +233,16 @@ public class BattleManager : MonoBehaviour
 
     public void UsePotion()
     {
-        if (!CanPlayerAct() || !potionAvailable) return;
+        //TODO: Meter pociones del inventario
+        if (!CanPlayerAct() || !potionAvailable)
+            return;
 
         BattleUnit actor = CurrentActor;
 
         actor.Heal(35);
         potionAvailable = false;
 
-        AfterPlayerAction(
-            actor.unitName + " usa una poción y recupera vida."
-        );
+        AfterPlayerAction(actor.unitName + " usa una poción y recupera vida.");
     }
 
     public void Defend()
@@ -196,17 +255,13 @@ public class BattleManager : MonoBehaviour
         pendingAction = PendingAction.None;
 
         AfterPlayerAction(
-            CurrentActor.unitName +
-            " se defiende y recibirá la mitad del daño este turno."
+            CurrentActor.unitName + " se defiende y recibirá la mitad del daño este turno."
         );
     }
 
     public void SelectNextTarget()
     {
-
-        if (!playerTurn ||
-            battleEnded ||
-            pendingAction == PendingAction.None)
+        if (!playerTurn || battleEnded || pendingAction == PendingAction.None)
             return;
 
         int next = FindAliveEnemy(targetIndex + 1);
@@ -219,9 +274,7 @@ public class BattleManager : MonoBehaviour
 
     public void SelectPreviousTarget()
     {
-        if (!playerTurn ||
-            battleEnded ||
-            pendingAction == PendingAction.None)
+        if (!playerTurn || battleEnded || pendingAction == PendingAction.None)
             return;
 
         int previous = FindPreviousAliveEnemy(targetIndex - 1);
@@ -234,25 +287,34 @@ public class BattleManager : MonoBehaviour
 
     private bool CanPlayerAct()
     {
-        return playerTurn &&
-               !battleEnded &&
-               CurrentActor != null &&
-               CurrentActor.IsAlive;
+        return playerTurn && !battleEnded && CurrentActor != null && CurrentActor.IsAlive;
     }
 
     private string DealPlayerDamage(
         BattleUnit actor,
         BattleUnit target,
         int baseDamage,
-        string action)
+        string action
+    )
     {
         DiceRoll roll = diceManager.Roll(false);
         int totalDamage = baseDamage + roll.Total;
         target.TakeDamage(totalDamage);
 
-        return actor.unitName + " " + action + " " + target.unitName +
-               " (2d6: " + roll.FirstDie + "+" + roll.SecondDie +
-               ", +" + roll.Total + ", " + totalDamage + " de daño).";
+        return actor.unitName
+            + " "
+            + action
+            + " "
+            + target.unitName
+            + " (2d6: "
+            + roll.FirstDie
+            + "+"
+            + roll.SecondDie
+            + ", +"
+            + roll.Total
+            + ", "
+            + totalDamage
+            + " de daño).";
     }
 
     public void ConfirmAction()
@@ -322,7 +384,6 @@ public class BattleManager : MonoBehaviour
 
             BattleUnit target = party[aliveIndex];
 
-
             yield return StartCoroutine(enemy.Attack());
 
             int damage = enemy.attackPower;
@@ -336,16 +397,17 @@ public class BattleManager : MonoBehaviour
 
             yield return new WaitForSeconds(0.5f);
 
-            string defenseText = defending
-                ? " (defensa: mitad de daño)"
-                : "";
+            string defenseText = defending ? " (defensa: mitad de daño)" : "";
 
             RefreshUI(
-                enemy.unitName + " ataca a " +
-                target.unitName + " (" +
-                damage + " de daño" +
-                defenseText +
-                ")."
+                enemy.unitName
+                    + " ataca a "
+                    + target.unitName
+                    + " ("
+                    + damage
+                    + " de daño"
+                    + defenseText
+                    + ")."
             );
 
             yield return new WaitForSeconds(0.4f);
@@ -386,8 +448,7 @@ public class BattleManager : MonoBehaviour
         {
             int index = (start + i) % enemies.Length;
 
-            if (enemies[index] != null &&
-                enemies[index].IsAlive)
+            if (enemies[index] != null && enemies[index].IsAlive)
                 return index;
         }
 
@@ -398,11 +459,9 @@ public class BattleManager : MonoBehaviour
     {
         for (int i = 0; i < enemies.Length; i++)
         {
-            int index =
-                (start - i + enemies.Length) % enemies.Length;
+            int index = (start - i + enemies.Length) % enemies.Length;
 
-            if (enemies[index] != null &&
-                enemies[index].IsAlive)
+            if (enemies[index] != null && enemies[index].IsAlive)
             {
                 return index;
             }
@@ -427,17 +486,13 @@ public class BattleManager : MonoBehaviour
         foreach (BattleUnit unit in party)
         {
             if (unit != null)
-                unit.SetSelected(
-                    playerTurn && unit == CurrentActor
-                );
+                unit.SetSelected(playerTurn && unit == CurrentActor);
         }
 
         foreach (BattleUnit unit in enemies)
         {
             if (unit != null)
-                unit.SetSelected(
-                    playerTurn && unit == CurrentTarget
-                );
+                unit.SetSelected(playerTurn && unit == CurrentTarget);
         }
 
         battleUI.Refresh(
@@ -452,21 +507,34 @@ public class BattleManager : MonoBehaviour
 
     private void EndBattle(bool victory)
     {
+        if (battleEnded)
+            return;
         battleEnded = true;
         playerTurn = false;
 
-        RefreshUI(
-            victory ? "¡Victoria!" : "Derrota..."
-        );
+        RefreshUI(victory ? "¡Victoria!" : "Derrota...");
 
-        Debug.Log(
-            victory ? "Combate ganado." : "Combate perdido."
-        );
+        Debug.Log(victory ? "Combate ganado." : "Combate perdido.");
+        StartCoroutine(FinishEncounter(victory));
     }
 
-    private IEnumerator ReturnToPreviousScene()
+    private IEnumerator FinishEncounter(bool victory)
     {
         yield return new WaitForSeconds(1.5f);
-        SceneManager.LoadScene(7);
+        if (!victory)
+        {
+            SceneManager.LoadScene("GameOver");
+            yield break;
+        }
+
+        CombatEncounter completed = activeEncounter;
+        activeEncounter = null;
+        completed.CompleteVictory();
+        if (battleCanvas != null)
+            battleCanvas.enabled = false;
+        if (explorationCamera != null)
+            explorationCamera.enabled = true;
+        if (input != null)
+            input.EnableGameplayInput();
     }
 }

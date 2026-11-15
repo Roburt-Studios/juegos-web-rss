@@ -14,7 +14,7 @@ public class TalkToEnemy : MonoBehaviour
         string dialog = !talked ? dialogId : "DHablado";
         dialogManager = ServiceLocator.Instance.GetService<DialogManager>();
 
-        dialogManager.StartDialog(dialog);
+        dialogManager.StartDialog(dialog, GetComponent<CombatEncounter>());
         talked = true;
     }
 }

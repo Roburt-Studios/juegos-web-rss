@@ -4,7 +4,6 @@ using Patterns.ServiceLocator;
 using Patterns.ServiceLocator.Interfaces;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
 
 public class DialogManager : MonoBehaviour, IService
 {
@@ -21,6 +20,8 @@ public class DialogManager : MonoBehaviour, IService
     private readonly HashSet<string> grantedItems = new();
     private readonly HashSet<string> rolledDialogs = new();
     private Dialog currentDialog;
+    private CombatEncounter currentEncounter;
+    [SerializeField] private BattleManager battleManager;
     private Dialog.Node currentNode;
     private Dialog.Option pendingRollOption;
     private string pendingRollNextId;
@@ -81,7 +82,7 @@ public class DialogManager : MonoBehaviour, IService
             AdvanceDialog();
     }
 
-    public void StartDialog(string dialogId)
+    public void StartDialog(string dialogId, CombatEncounter encounter = null)
     {
         if (inDialog || uiController == null || dialogDB == null)
             return;
@@ -92,6 +93,8 @@ public class DialogManager : MonoBehaviour, IService
             || !currentDialog.TryGetNode(currentDialog.startNodeId, out currentNode)
         )
             return;
+
+        currentEncounter = encounter;
 
         CancelInvoke(nameof(RestoreGameplayControl));
         CancelInvoke(nameof(UnlockPlayer));
@@ -133,8 +136,13 @@ public class DialogManager : MonoBehaviour, IService
 
         if (string.Equals(currentNode.tag, "combate", StringComparison.OrdinalIgnoreCase))
         {
+            CombatEncounter encounter = currentEncounter;
             FinishDialog(false);
-            SceneManager.LoadScene("CombatScene");
+            if (battleManager == null || !battleManager.BeginEncounter(encounter))
+            {
+                Debug.LogError("DialogManager: combate sin encuentro configurado.", this);
+                input.EnableGameplayInput();
+            }
             return;
         }
 
@@ -271,6 +279,7 @@ public class DialogManager : MonoBehaviour, IService
         inDialog = false;
         currentNode = null;
         currentDialog = null;
+        currentEncounter = null;
         pendingRollOption = null;
         pendingRollNextId = null;
         uiController.HideUI();

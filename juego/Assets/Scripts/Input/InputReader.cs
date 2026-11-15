@@ -34,6 +34,7 @@ public class InputReader : ScriptableObject, PlayerControls.IPlayerActions
 
     public void DisableAllInput()
     {
+        MoveEvent?.Invoke(Vector2.zero);
         controls.Player.Disable();
     }
 

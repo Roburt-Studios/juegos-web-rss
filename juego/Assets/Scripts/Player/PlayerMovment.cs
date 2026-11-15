@@ -5,14 +5,16 @@ public class PlayerMovment : MonoBehaviour
 {
     [Header("Movimiento")]
     [SerializeField]
-    private float moveSpeed = 10f;
+    private float moveSpeed = 9f;
 
     [Tooltip("Velocidad a la que el personaje se orienta hacia su dirección de movimiento.")]
     [SerializeField]
     private float rotationSpeed = 720f;
 
     [Header("Referencia")]
-    [Tooltip("La cámara cuya orientación horizontal determina W/A/S/D. Si se deja vacía, se usa Main Camera.")]
+    [Tooltip(
+        "La cámara cuya orientación horizontal determina W/A/S/D. Si se deja vacía, se usa Main Camera."
+    )]
     [SerializeField]
     private Camera movementCamera;
 
@@ -25,11 +27,13 @@ public class PlayerMovment : MonoBehaviour
     [SerializeField]
     private float groundedPullForce = -9.8f;
 
+    private Animator animator;
     private CharacterController characterController;
 
     void Awake()
     {
         characterController = GetComponent<CharacterController>();
+        animator = GetComponent<Animator>();
     }
 
     void Start()
@@ -38,7 +42,9 @@ public class PlayerMovment : MonoBehaviour
             movementCamera = Camera.main;
 
         if (movementCamera == null)
-            Debug.LogWarning("PlayerMovment: No se encontró una Main Camera; el movimiento usará la orientación del jugador.");
+            Debug.LogWarning(
+                "PlayerMovment: No se encontró una Main Camera; el movimiento usará la orientación del jugador."
+            );
     }
 
     // Update is called once per frame
@@ -65,7 +71,8 @@ public class PlayerMovment : MonoBehaviour
         // el jugador se aleja de ella. A/S/D conservan la misma relación.
         Vector3 moveDirection = Vector3.ClampMagnitude(
             (cameraRight * rawInput.x) + (cameraForward * rawInput.z),
-            1f);
+            1f
+        );
 
         // El personaje mira hacia donde se desplaza, sin afectar la inclinación vertical.
         if (moveDirection.sqrMagnitude > 0.0001f)
@@ -74,11 +81,13 @@ public class PlayerMovment : MonoBehaviour
             transform.rotation = Quaternion.RotateTowards(
                 transform.rotation,
                 targetRotation,
-                rotationSpeed * Time.deltaTime);
+                rotationSpeed * Time.deltaTime
+            );
         }
 
         Vector3 motion = (moveDirection * moveSpeed) + (Vector3.up * groundedPullForce);
         characterController.Move(motion * Time.deltaTime);
+        animator.SetBool("IsMoving", characterController.velocity != Vector3.zero);
     }
 
     void OnEnable()
