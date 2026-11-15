@@ -21,6 +21,7 @@ public class BattleManager : MonoBehaviour
     private bool playerTurn;
     private bool battleEnded;
     private bool potionAvailable = true;
+    private bool defending;
 
     private BattleUnit CurrentActor =>
         partyIndex >= 0 && partyIndex < party.Length
@@ -31,6 +32,19 @@ public class BattleManager : MonoBehaviour
         targetIndex >= 0 && targetIndex < enemies.Length
             ? enemies[targetIndex]
             : null;
+
+    public bool IsSelectingTarget =>
+        pendingAction != PendingAction.None;
+
+    private enum PendingAction
+    {
+        None,
+        Attack,
+        Special
+    }
+
+    private PendingAction pendingAction = PendingAction.None;
+
 
     private void Start()
     {
@@ -67,24 +81,79 @@ public class BattleManager : MonoBehaviour
     {
         if (!CanPlayerAct()) return;
 
+        if (pendingAction == PendingAction.None)
+        {
+            pendingAction = PendingAction.Attack;
+            RefreshUI("Elige un enemigo con ← → y pulsa ENTER para atacar.");
+
+            return;
+        }
+
+        ConfirmTarget();
+    }
+
+    public void UseSpecial()
+    {
+        if (!CanPlayerAct()) return;
+
+        if (pendingAction == PendingAction.None)
+        {
+            pendingAction = PendingAction.Special;
+            RefreshUI("Elige un enemigo con ← → y pulsa ENTER para usar la habilidad.");
+
+            return;
+        }
+
+        ConfirmTarget();
+    }
+
+    private void ConfirmTarget()
+    {
         BattleUnit actor = CurrentActor;
         BattleUnit target = CurrentTarget;
 
-        string message = DealPlayerDamage(actor, target, actor.attackPower, "ataca a");
+        if (target == null || !target.IsAlive)
+            return;
+
+        string message;
+
+        if (pendingAction == PendingAction.Attack)
+        {
+            message = DealPlayerDamage(
+                actor,
+                target,
+                actor.attackPower,
+                "ataca a"
+            );
+        }
+        else if (pendingAction == PendingAction.Special)
+        {
+            message = DealPlayerDamage(
+                actor,
+                target,
+                actor.skillPower,
+                "usa una habilidad contra"
+            );
+        }
+        else
+        {
+            return;
+        }
+
+        pendingAction = PendingAction.None;
+
+        ClearTargetSelection();
 
         AfterPlayerAction(message);
     }
 
-    public void UseSkill()
+    private void ClearTargetSelection()
     {
-        if (!CanPlayerAct()) return;
-
-        BattleUnit actor = CurrentActor;
-        BattleUnit target = CurrentTarget;
-
-        string message = DealPlayerDamage(actor, target, actor.skillPower, "usa una habilidad contra");
-
-        AfterPlayerAction(message);
+        foreach (BattleUnit enemy in enemies)
+        {
+            if (enemy != null)
+                enemy.SetSelected(false);
+        }
     }
 
     public void UsePotion()
@@ -101,16 +170,50 @@ public class BattleManager : MonoBehaviour
         );
     }
 
+    public void Defend()
+    {
+        if (!CanPlayerAct())
+            return;
+
+        defending = true;
+
+        pendingAction = PendingAction.None;
+
+        AfterPlayerAction(
+            CurrentActor.unitName +
+            " se defiende y recibirá la mitad del daño este turno."
+        );
+    }
+
     public void SelectNextTarget()
     {
-        if (!playerTurn || battleEnded) return;
+
+        if (!playerTurn ||
+            battleEnded ||
+            pendingAction == PendingAction.None)
+            return;
 
         int next = FindAliveEnemy(targetIndex + 1);
 
         if (next >= 0)
             targetIndex = next;
 
-        RefreshUI("Selecciona tu acción.");
+        RefreshUI("Objetivo: " + CurrentTarget.unitName);
+    }
+
+    public void SelectPreviousTarget()
+    {
+        if (!playerTurn ||
+            battleEnded ||
+            pendingAction == PendingAction.None)
+            return;
+
+        int previous = FindPreviousAliveEnemy(targetIndex - 1);
+
+        if (previous >= 0)
+            targetIndex = previous;
+
+        RefreshUI("Objetivo: " + CurrentTarget.unitName);
     }
 
     private bool CanPlayerAct()
@@ -118,9 +221,7 @@ public class BattleManager : MonoBehaviour
         return playerTurn &&
                !battleEnded &&
                CurrentActor != null &&
-               CurrentActor.IsAlive &&
-               CurrentTarget != null &&
-               CurrentTarget.IsAlive;
+               CurrentActor.IsAlive;
     }
 
     private string DealPlayerDamage(
@@ -136,6 +237,17 @@ public class BattleManager : MonoBehaviour
         return actor.unitName + " " + action + " " + target.unitName +
                " (2d6: " + roll.FirstDie + "+" + roll.SecondDie +
                ", +" + roll.Total + ", " + totalDamage + " de daño).";
+    }
+
+    public void ConfirmAction()
+    {
+        if (!CanPlayerAct())
+            return;
+
+        if (pendingAction == PendingAction.None)
+            return;
+
+        ConfirmTarget();
     }
 
     private void AfterPlayerAction(string message)
@@ -193,15 +305,34 @@ public class BattleManager : MonoBehaviour
             }
 
             BattleUnit target = party[aliveIndex];
-            target.TakeDamage(enemy.attackPower);
+
+
+            yield return StartCoroutine(enemy.Attack());
+
+            int damage = enemy.attackPower;
+
+            if (defending)
+            {
+                damage = Mathf.Max(1, damage / 2);
+            }
+
+            target.TakeDamage(damage);
+
+            yield return new WaitForSeconds(0.5f);
+
+            string defenseText = defending
+                ? " (defensa: mitad de daño)"
+                : "";
 
             RefreshUI(
                 enemy.unitName + " ataca a " +
                 target.unitName + " (" +
-                enemy.attackPower + " de daño)."
+                damage + " de daño" +
+                defenseText +
+                ")."
             );
 
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(0.4f);
         }
 
         if (AllDefeated(party))
@@ -211,8 +342,12 @@ public class BattleManager : MonoBehaviour
             yield break;
         }
 
+        defending = false;
+
         partyIndex = FindAlivePartyMember(0);
         targetIndex = FindAliveEnemy(0);
+
+        pendingAction = PendingAction.None;
 
         playerTurn = true;
         RefreshUI("¡Turno del equipo!");
@@ -238,6 +373,23 @@ public class BattleManager : MonoBehaviour
             if (enemies[index] != null &&
                 enemies[index].IsAlive)
                 return index;
+        }
+
+        return -1;
+    }
+
+    private int FindPreviousAliveEnemy(int start)
+    {
+        for (int i = 0; i < enemies.Length; i++)
+        {
+            int index =
+                (start - i + enemies.Length) % enemies.Length;
+
+            if (enemies[index] != null &&
+                enemies[index].IsAlive)
+            {
+                return index;
+            }
         }
 
         return -1;

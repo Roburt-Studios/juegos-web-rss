@@ -10,13 +10,13 @@ public class BattleUI : MonoBehaviour
     public TMP_Text statusText;
     public TMP_Text partyStatusText;
     public TMP_Text enemyStatusText;
-    public TMP_Text targetButtonText;
 
     [Header("Botones")]
     public Button attackButton;
-    public Button skillButton;
+    public Button defendButton;
     public Button potionButton;
-    public Button targetButton;
+    public Button specialButton;
+
 
     private BattleManager manager;
 
@@ -28,48 +28,81 @@ public class BattleUI : MonoBehaviour
             () => manager.Attack()
         );
 
-        skillButton.onClick.AddListener(
-            () => manager.UseSkill()
+        defendButton.onClick.AddListener(
+            () => manager.Defend()
         );
 
         potionButton.onClick.AddListener(
             () => manager.UsePotion()
         );
 
-        targetButton.onClick.AddListener(
-            () => manager.SelectNextTarget()
+        specialButton.onClick.AddListener(
+            () => manager.UseSpecial()
         );
+
+
+    }
+
+    private void Update()
+    {
+        if (manager == null)
+            return;
+
+        if (!manager.IsSelectingTarget)
+            return;
+
+        if (Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            manager.SelectNextTarget();
+        }
+
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+            manager.SelectPreviousTarget();
+        }
+
+        if (Input.GetKeyDown(KeyCode.Return) ||
+            Input.GetKeyDown(KeyCode.KeypadEnter))
+        {
+            manager.ConfirmAction();
+        }
     }
 
     public void Refresh(
-        BattleUnit[] party,
-        BattleUnit[] enemies,
-        BattleUnit target,
-        string message,
-        bool playerTurn,
-        bool potionAvailable
-    )
+            BattleUnit[] party,
+            BattleUnit[] enemies,
+            BattleUnit target,
+            string message,
+            bool playerTurn,
+            bool potionAvailable
+            )
     {
         statusText.text = message;
 
         partyStatusText.text = BuildStatus(party);
         enemyStatusText.text = BuildStatus(enemies);
 
-        targetButtonText.text = target != null
-            ? "Objetivo: " + target.unitName
-            : "Sin objetivos";
+        attackButton.interactable = playerTurn;
 
-        attackButton.interactable =
-            playerTurn && target != null;
-
-        skillButton.interactable =
-            playerTurn && target != null;
+        specialButton.interactable = playerTurn;
 
         potionButton.interactable =
             playerTurn && potionAvailable;
 
-        targetButton.interactable =
-            playerTurn && target != null;
+        defendButton.interactable = playerTurn;
+
+        foreach (BattleUnit enemy in enemies)
+        {
+            if (enemy == null)
+                continue;
+
+            enemy.SetSelected(
+                playerTurn &&
+                target != null &&
+                enemy == target &&
+                manager.IsSelectingTarget
+            );
+        }
     }
 
     private string BuildStatus(BattleUnit[] units)
