@@ -55,7 +55,6 @@ public class BattleUnit : MonoBehaviour
         Vector2 startPosition = originalPosition;
         Vector2 attackPosition = originalPosition + new Vector2(0f, -40f);
 
-        // Movimiento hacia abajo
         while (elapsed < duration)
         {
             float t = elapsed / duration;
@@ -74,7 +73,6 @@ public class BattleUnit : MonoBehaviour
 
         elapsed = 0f;
 
-        // Regreso
         while (elapsed < duration)
         {
             float t = elapsed / duration;
