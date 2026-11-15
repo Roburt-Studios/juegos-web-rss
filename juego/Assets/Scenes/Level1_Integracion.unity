@@ -31489,6 +31489,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: bceec79bc71b0ee458a71fa256ed8417, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1319869959}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: bceec79bc71b0ee458a71fa256ed8417, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1319869962}
   m_SourcePrefab: {fileID: 100100000, guid: bceec79bc71b0ee458a71fa256ed8417, type: 3}
 --- !u!4 &1319869951 stripped
 Transform:
@@ -31531,14 +31534,42 @@ MonoBehaviour:
   m_GameObject: {fileID: 1319869952}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0647a8af455d14edaa963d50f0b4d511, type: 3}
+  m_Script: {fileID: 11500000, guid: 24fc9927f967303409389ac0a6a83d68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableLockedDoor
+  neededItem: {fileID: 11400000, guid: 5cafe6ce08251607fbea9024d2347456, type: 2}
+  failedDialogID: DFailedDoor
+  callbackAction:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1319869962}
+        m_TargetAssemblyTypeName: InteractableDoor, Assembly-CSharp
+        m_MethodName: DoorAction
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &1319869962
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1319869952}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8b177936be6d3c5cb5dc3ea3619551c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InteractableDoor
   openRotationY: 180
   closeRotationY: 270
   duration: 0.75
-  neededItem: {fileID: 11400000, guid: 5cafe6ce08251607fbea9024d2347456, type: 2}
-  failedDialogID: DFailedDoor
+  isConditional: 1
 --- !u!1001 &1324315580
 PrefabInstance:
   m_ObjectHideFlags: 0
