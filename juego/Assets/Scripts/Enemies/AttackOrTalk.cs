@@ -68,7 +68,6 @@ public class AttackOrTalk : MonoBehaviour, IInteractable
 
         talkComponent.Talk();
         CloseMenu();
-        gameObject.tag = "Untagged";
     }
 
     public void Cancel()

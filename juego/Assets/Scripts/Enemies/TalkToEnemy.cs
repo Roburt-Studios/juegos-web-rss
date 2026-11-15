@@ -6,9 +6,15 @@ public class TalkToEnemy : MonoBehaviour
     [SerializeField]
     private string dialogId;
 
+    private DialogManager dialogManager;
+    private bool talked = false;
+
     public void Talk()
     {
-        ServiceLocator.Instance.GetService<DialogManager>().StartDialog(dialogId);
-        gameObject.tag = "Untagged";
+        string dialog = !talked ? dialogId : "DHablado";
+        dialogManager = ServiceLocator.Instance.GetService<DialogManager>();
+
+        dialogManager.StartDialog(dialog);
+        talked = true;
     }
 }

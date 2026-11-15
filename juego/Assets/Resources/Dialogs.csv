@@ -1,16 +1,26 @@
 DialogID;NodeID;Type;CharacterID;Text;NextID;FailureNextID;Difficulty;Tag
-D2;inicio;line;player;Baja el arma. No he venido a reclamar tu cabeza ni el botín de esta fosa.;respuesta_enemigo
-D2;respuesta_enemigo;line;enemy;Un caballero sin blasón arrastrándose por el barro... ¿Acaso buscas una muerte rápida?;busqueda
-D2;busqueda;line;player;Busco a un muchacho. Mi escudero. Se adentró en estas catacumbas antes del amanecer.;advertencia
-D2;advertencia;line;enemy;Muchos bajan, pocos regresan enteros. Los túneles inferiores no perdonan a los novatos.;pregunta
+D2;inicio;line;player;Baja el arma. Busco a mi escudero. ¿Lo has visto pasar?;respuesta_enemigo
+D2;respuesta_enemigo;line;enemy;Quizá. Pero los túneles no son lugar para ir haciendo preguntas.;pregunta
 D2;pregunta;choice;enemy;;
-D2;pregunta;option;player;Dime por dónde acceder a los niveles inferiores.;ayuda
-D2;pregunta;option;player;Habla o comprobarás si mi espada aún recuerda su oficio.;reaccion;amenaza_fallida;9;
-D2;ayuda;line;enemy;Toma el pasaje oriental tras la cripta inundada. Apresúrate: las bestias del foso ya olieron sangre fresca.;regalo
-D2;reaccion;line;enemy;Tranquiliza tu hierro, proscrito. Toma el pasaje oriental tras la cripta inundada, pero apresúrate: las bestias del foso ya olieron sangre fresca.;regalo
-D2;regalo;line;enemy;Toma esta moneda antigua. Quizá te sirva más adelante.;despedida;;;darobjeto-MonedaAntigua
-D2;amenaza_fallida;line;enemy;Esta bravuconería no te llevará lejos. Prepárate para morir.;;;;combate
-D2;despedida;line;player;Si vive cuando lo encuentre, consideraré saldada tu deuda con la vida.;
+D2;pregunta;option;player;Necesito encontrarlo. Dime qué hay más adelante.;advertencia;evasiva;8;
+D2;pregunta;option;player;Me las arreglaré por mi cuenta.;despedida
+D2;advertencia;line;enemy;Más adelante hay un guardia. No dejará pasar a nadie que no lleve un pase.;despedida
+D2;evasiva;line;enemy;No tengo nada que contarte. Sigue tu camino.;despedida
+D2;despedida;line;player;Entendido.;
 
+DGuardia;inicio;line;enemy;Alto. Nadie pasa sin un pase.;pregunta
+DGuardia;pregunta;choice;enemy;;
+DGuardia;pregunta;option;player;Me he dejado el pase en algún sitio. ¿Puedes ayudarme?;pista_cofre;rechazo;8;
+DGuardia;pregunta;option;player;Volveré cuando tenga el pase.;despedida
+DGuardia;pista_cofre;line;enemy;Hay un cofre más atrás donde guardamos pases sueltos. El pase está dentro. Busca el cofre.;entrega_llave
+DGuardia;entrega_llave;line;enemy;Toma la llave del cofre. Vuelve con el pase.;despedida;;;darobjeto-LlaveCofrePase
+DGuardia;rechazo;line;enemy;Esa excusa no me convence. Sin pase no cruzas.;
+DGuardia;despedida;line;player;De acuerdo.;
+
+DHablado;inicio;line;enemy;Ya hemos hablado. No tengo nada más que decirte.;
+
+DCofre;inicio;line;player;El cofre está cerrado. Necesito su llave.;
+DCofreConPase;inicio;line;player;Dentro está el pase. Ya puedo volver al guardia.;
 
 DFailedDoor;inicio;line;player;Necesito una llave para abrir esto.;
+DPuertaPase;inicio;line;player;La puerta tiene una ranura. Tengo que introducir un pase por el agujero para abrirla.;

@@ -9,7 +9,15 @@ public class InventoryPickup : MonoBehaviour, IInteractable
     [SerializeField, Min(1)]
     private int quantity = 1;
 
+    [SerializeField]
+    private bool destroyOnPickup = true;
+
     public void Interacted()
+    {
+        PickUpAction();
+    }
+
+    public void PickUpAction()
     {
         if (item == null || ServiceLocator.Instance == null)
         {
@@ -24,6 +32,7 @@ public class InventoryPickup : MonoBehaviour, IInteractable
         }
 
         Debug.Log($"Recogido: {item.displayName} x{quantity}.", this);
-        Destroy(gameObject);
+        if (destroyOnPickup)
+            Destroy(gameObject);
     }
 }

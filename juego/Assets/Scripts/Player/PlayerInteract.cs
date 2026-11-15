@@ -43,10 +43,20 @@ public class PlayerInteract : MonoBehaviour
 
         nearby = Physics.OverlapSphere(origin, radius, mask, QueryTriggerInteraction.Collide);
 
-        if (nearby.Length == 0)
+        bool hasInteractable = false;
+        foreach (Collider candidate in nearby)
+        {
+            if (candidate.CompareTag("Interactable") && candidate.GetComponent<IInteractable>() != null)
+            {
+                hasInteractable = true;
+                break;
+            }
+        }
+
+        if (!hasInteractable)
             warningDismissed = false;
 
-        if (nearby.Length > 0 && !warningDismissed)
+        if (hasInteractable && !warningDismissed)
         {
             interactWarning.SetActive(true);
             interactWarning.transform.LookAt(cameraTransform, Vector3.up);

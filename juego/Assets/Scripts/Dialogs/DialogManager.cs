@@ -18,6 +18,8 @@ public class DialogManager : MonoBehaviour, IService
     [SerializeField]
     private List<CharacterSpriteEntry> characterSprites = new();
     private readonly Dictionary<string, Sprite> charactersSpriteMap = new();
+    private readonly HashSet<string> grantedItems = new();
+    private readonly HashSet<string> rolledDialogs = new();
     private Dialog currentDialog;
     private Dialog.Node currentNode;
     private Dialog.Option pendingRollOption;
@@ -54,6 +56,8 @@ public class DialogManager : MonoBehaviour, IService
 
     public bool TryGetCharacterSprite(string characterId, out Sprite sprite) =>
         charactersSpriteMap.TryGetValue(characterId, out sprite);
+
+    public bool WasRollAttempted(string dialogId) => rolledDialogs.Contains(dialogId);
 
     private void RebuildCharacterSpriteMap()
     {
@@ -139,36 +143,42 @@ public class DialogManager : MonoBehaviour, IService
             && currentNode.tag.StartsWith(GiveItemTagPrefix, StringComparison.OrdinalIgnoreCase)
         )
         {
-            GiveItem(currentNode.tag.Substring(GiveItemTagPrefix.Length));
+            string grantId = currentDialog.id + "/" + currentNode.id;
+            if (
+                !grantedItems.Contains(grantId)
+                && GiveItem(currentNode.tag.Substring(GiveItemTagPrefix.Length))
+            )
+                grantedItems.Add(grantId);
         }
 
         GoToNode(currentNode.nextId);
     }
 
-    private void GiveItem(string itemName)
+    private bool GiveItem(string itemName)
     {
         if (string.IsNullOrWhiteSpace(itemName))
         {
             Debug.LogWarning(
                 $"El dialogo  {currentDialog.id} no tiene etiqueta darobjeto con un objeto."
             );
-            return;
+            return false;
         }
 
         InventoryItem item = Resources.Load<InventoryItem>($"InventoryItems/{itemName.Trim()}");
         if (item == null)
         {
             Debug.LogWarning($"Objeto {itemName} no extiste");
-            return;
+            return false;
         }
 
         if (!ServiceLocator.Instance.GetService<InventoryService>().Add(item))
         {
             Debug.LogWarning($"Inventario lleno, el dialogo no pudo entregar {item.displayName}.");
-            return;
+            return false;
         }
 
         Debug.Log($"Diálogo {currentDialog.id}: recibido {item.displayName}.");
+        return true;
     }
 
     public void SelectChoice(int index)
@@ -213,6 +223,7 @@ public class DialogManager : MonoBehaviour, IService
             diceManager = gameObject.AddComponent<DiceManager>();
 
         DiceRoll roll = diceManager.Roll();
+        rolledDialogs.Add(currentDialog.id);
         int difficulty = pendingRollOption.difficulty;
         bool success = roll.Total >= difficulty;
         pendingRollNextId = success ? pendingRollOption.nextId : pendingRollOption.failureNextId;
