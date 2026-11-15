@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class BattleManager : MonoBehaviour
 {
@@ -128,12 +129,7 @@ public class BattleManager : MonoBehaviour
         }
         else if (pendingAction == PendingAction.Special)
         {
-            message = DealPlayerDamage(
-                actor,
-                target,
-                actor.skillPower,
-                "usa una habilidad contra"
-            );
+            message = UseSkill(actor, target);
         }
         else
         {
@@ -145,6 +141,26 @@ public class BattleManager : MonoBehaviour
         ClearTargetSelection();
 
         AfterPlayerAction(message);
+    }
+
+    private string UseSkill(BattleUnit actor, BattleUnit target)
+    {
+        if (!actor.HasSkill)
+        {
+            return DealPlayerDamage(actor, target, actor.skillPower, "usa una habilidad contra");
+        }
+        PlayerSkillsData.Skill skill = actor.Skill;
+
+        float multiplier = skill.AttackPower;
+
+        bool critic = UnityEngine.Random.Range(0, 100) < skill.Critic;
+        if (critic) multiplier *= 1.5f;
+
+        int baseDamage = Mathf.RoundToInt(actor.skillPower * multiplier);
+
+        string action = "usa" + skill.SkillName + (critic ? "(CRÍTICO)" : "") + " contra";
+
+        return DealPlayerDamage(actor, target, baseDamage, action);
     }
 
     private void ClearTargetSelection()
@@ -230,7 +246,7 @@ public class BattleManager : MonoBehaviour
         int baseDamage,
         string action)
     {
-        DiceRoll roll = diceManager.Roll();
+        DiceRoll roll = diceManager.Roll(false);
         int totalDamage = baseDamage + roll.Total;
         target.TakeDamage(totalDamage);
 
@@ -446,5 +462,11 @@ public class BattleManager : MonoBehaviour
         Debug.Log(
             victory ? "Combate ganado." : "Combate perdido."
         );
+    }
+
+    private IEnumerator ReturnToPreviousScene()
+    {
+        yield return new WaitForSeconds(1.5f);
+        SceneManager.LoadScene(7);
     }
 }

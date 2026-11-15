@@ -6,6 +6,13 @@ public class DiceManager : MonoBehaviour, IService
 {
     public event EventHandler<DiceRoll> Rolled;
 
+    PlayerClassManager manager;
+
+    void Awake()
+    {
+        manager = FindFirstObjectByType<PlayerClassManager>();
+    }
+
     public void Initialize() { }
 
     public DiceRoll LastRoll { get; private set; }
@@ -14,10 +21,12 @@ public class DiceManager : MonoBehaviour, IService
     /// Lanza dos dados de seis caras y notifica a quien quiera mostrar o usar
     /// el resultado. Esta clase no conoce ningún elemento de interfaz.
     /// </summary>
-    public DiceRoll Roll()
+    public DiceRoll Roll(bool applyCharisma)
     {
-        int firstNum = UnityEngine.Random.Range(1, 7);
-        int secondNum = UnityEngine.Random.Range(1, 7);
+        int charisma = applyCharisma ? PlayerDataFactory.GetData(manager.characterClass).Charisma : 0;
+
+        int firstNum = MayIncreaseWithCharisma(charisma);
+        int secondNum = MayIncreaseWithCharisma(charisma);
 
         LastRoll = new DiceRoll(firstNum, secondNum);
         Rolled?.Invoke(this, LastRoll);
@@ -25,10 +34,26 @@ public class DiceManager : MonoBehaviour, IService
         return LastRoll;
     }
 
-    // Se mantiene para los botones ya configurados en escenas antiguas.
-    public void RollDices()
+    //Hay reroll según lo alto que sea el carisma, a más alto más probabilidad de hacer reroll, pero ello no implica sacar
+    //siempre un mejor resultado, solo uno que no sea peor
+    public int MayIncreaseWithCharisma(int charisma)
     {
-        Roll();
+        int result = UnityEngine.Random.Range(1, 7);
+
+        float prob = Mathf.Clamp01(charisma / 100f);
+
+        if(UnityEngine.Random.value < prob)
+        {
+            result = Mathf.Max(result, UnityEngine.Random.Range(1, 7));
+        }
+
+        return result;
+    }
+
+    // Se mantiene para los botones ya configurados en escenas antiguas.
+    public void RollDices(bool applyCharisma)
+    {
+        Roll(applyCharisma);
     }
 }
 

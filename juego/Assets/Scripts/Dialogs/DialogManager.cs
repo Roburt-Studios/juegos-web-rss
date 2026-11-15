@@ -222,7 +222,7 @@ public class DialogManager : MonoBehaviour, IService
         if (diceManager == null)
             diceManager = gameObject.AddComponent<DiceManager>();
 
-        DiceRoll roll = diceManager.Roll();
+        DiceRoll roll = diceManager.Roll(true);
         rolledDialogs.Add(currentDialog.id);
         int difficulty = pendingRollOption.difficulty;
         bool success = roll.Total >= difficulty;

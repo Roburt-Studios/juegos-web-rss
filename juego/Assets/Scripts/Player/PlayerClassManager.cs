@@ -8,6 +8,8 @@ public class PlayerClassManager : MonoBehaviour
 
     public int selectedSkill = -1;
 
+    public int savedHP = -1;
+
     private void Awake()
     {
         if(instance == null)

@@ -4,11 +4,15 @@ using UnityEngine;
 [RequireComponent(typeof(BattleUnit))]
 public class PlayerSetup : MonoBehaviour
 {
+
+    private BattleUnit unit;
     Profile debugProfile = Profile.Strength;
     int debugSkill = 0;
 
     void Awake()
     {
+        unit = GetComponent<BattleUnit>();
+
         Profile profile = PlayerClassManager.instance != null ? PlayerClassManager.instance.characterClass : debugProfile;
 
         int idx = PlayerClassManager.instance != null ? PlayerClassManager.instance.selectedSkill : debugSkill;
@@ -19,12 +23,23 @@ public class PlayerSetup : MonoBehaviour
             (
             name: data.CharacterClass.ToString(),
             hp: data.InitialHealth,
+            def: data.Defense,
             damage: data.Strength,
             skill: data.SkillPower
             );
 
         List<PlayerSkillsData.Skill> skills = PlayerSkillsFactory.GetData(profile).ListOfSkills;
 
-        if (idx >= 0 && idx < skills.Count) GetComponent<BattleUnit>().SetSkill(skills[idx]);
+        if (idx >= 0 && idx < skills.Count) unit.SetSkill(skills[idx]);
+
+        if (PlayerClassManager.instance != null && PlayerClassManager.instance.savedHP > 0) unit.currentHP = Mathf.Min(PlayerClassManager.instance.savedHP, unit.maxHP);
+    }
+
+    private void OnDestroy()
+    {
+        if(PlayerClassManager.instance != null && unit != null)
+        {
+            PlayerClassManager.instance.savedHP = unit.currentHP;
+        }
     }
 }

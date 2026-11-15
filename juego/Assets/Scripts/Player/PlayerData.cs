@@ -17,6 +17,8 @@ public class PlayerData
 
     public int SkillPower { get; private set; }
 
+    public int Charisma { get; private set; }
+
     public PlayerData(
         Profile characterClass,
         int initialHealth,
@@ -29,6 +31,7 @@ public class PlayerData
         CharacterClass = characterClass;
         InitialHealth = initialHealth;
         Strength = strength;
+        Charisma = charisma;
         Defense = defense;
         SkillPower = skillPower;
     }

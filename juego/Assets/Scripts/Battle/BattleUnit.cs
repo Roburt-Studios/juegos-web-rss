@@ -11,6 +11,7 @@ public class BattleUnit : MonoBehaviour
     public int currentHP = 100;
     public int attackPower = 15;
     public int skillPower = 25;
+    public int defense = 0;
 
     public bool IsAlive => currentHP > 0;
 
@@ -19,6 +20,9 @@ public class BattleUnit : MonoBehaviour
     private Vector2 originalPosition;
 
     private Coroutine damageCoroutine;
+
+    public bool HasSkill { get; private set;  }
+    public PlayerSkillsData.Skill Skill { get; private set;  }
 
     private void Awake()
     {
@@ -30,10 +34,31 @@ public class BattleUnit : MonoBehaviour
         currentHP = Mathf.Clamp(currentHP, 0, maxHP);
     }
 
+    public void Initialize(string name, int hp, int def, int damage, int skill)
+    {
+        unitName = name;
+        maxHP = hp;
+        currentHP = hp;
+        defense = def;
+        attackPower = damage;
+        skillPower = skill;
+        SetSelected(false);
+    }
+
+    public void SetSkill(PlayerSkillsData.Skill skill)
+    {
+        Skill = skill;
+        HasSkill = true;
+    }
 
     public void TakeDamage(int damage)
     {
         if (!IsAlive) return;
+
+        if (defense > 0)
+        {
+            damage = Mathf.Max(1, Mathf.RoundToInt(damage * 100f / (100f + defense)));
+        }
 
         currentHP = Mathf.Max(0, currentHP - damage);
         UpdateAppearance();
