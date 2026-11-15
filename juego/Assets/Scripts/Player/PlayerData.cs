@@ -2,7 +2,6 @@ using UnityEngine;
 public enum Profile
 {
     Strength,
-    Charisma,
     Defense,
     Intelligence
 }
@@ -14,11 +13,9 @@ public class PlayerData
 
     public int Strength { get; private set; }
 
-    public int Charisma { get; private set; }
-    
     public int Defense { get; private set; }
 
-    public int Intelligence { get; private set; }
+    public int SkillPower { get; private set; }
 
     public PlayerData(
         Profile characterClass,
@@ -26,14 +23,13 @@ public class PlayerData
         int strength,
         int charisma,
         int defense,
-        int intelligence
+        int skillPower
         )
     {
         CharacterClass = characterClass;
         InitialHealth = initialHealth;
         Strength = strength;
-        Charisma = charisma;
         Defense = defense;
-        Intelligence = intelligence;
+        SkillPower = skillPower;
     }
 }

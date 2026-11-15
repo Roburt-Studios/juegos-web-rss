@@ -82,9 +82,25 @@ public class BattleManager : MonoBehaviour
         BattleUnit actor = CurrentActor;
         BattleUnit target = CurrentTarget;
 
-        string message = DealPlayerDamage(actor, target, actor.skillPower, "usa una habilidad contra");
+        if (!actor.HasSkill)
+        {
+            string message = DealPlayerDamage(actor, target, actor.skillPower, "usa una habilidad contra");
 
-        AfterPlayerAction(message);
+            AfterPlayerAction(message);
+            return;
+        }
+
+        PlayerSkillsData.Skill skill = actor.Skill;
+
+        int baseDamage = Mathf.RoundToInt(actor.skillPower * skill.AttackPower);
+
+        bool critic = UnityEngine.Random.Range(0, 100) < skill.Critic;
+
+        if (critic) baseDamage = Mathf.RoundToInt(actor.skillPower * skill.AttackPower * 1.5f);
+
+        string msg = DealPlayerDamage(actor, target, baseDamage, "usa una habilidad contra");
+
+        AfterPlayerAction(msg);
     }
 
     public void UsePotion()

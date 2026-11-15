@@ -1760,6 +1760,7 @@ GameObject:
   - component: {fileID: 1422150624}
   - component: {fileID: 1422150626}
   - component: {fileID: 1422150625}
+  - component: {fileID: 1422150627}
   m_Layer: 0
   m_Name: Party_01
   m_TagString: Untagged
@@ -1789,7 +1790,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1422150623}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 570fad3677f480843878d9c94d6c4986, type: 3}
   m_Name: 
@@ -1858,6 +1859,18 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &1422150627
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1422150623}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6a2a7219f510474fb6175bdbfa1e946, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerSetup
 --- !u!1 &1461770078
 GameObject:
   m_ObjectHideFlags: 0
