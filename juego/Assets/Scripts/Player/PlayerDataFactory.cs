@@ -28,15 +28,7 @@ public static class PlayerDataFactory
                     strength: 120,
                     charisma: 35,
                     defense: 65,
-                    intelligence: 50);
-            case (Profile.Charisma):
-                return new PlayerData(
-                    Profile.Charisma,
-                    initialHealth: 90,
-                    strength: 50,
-                    charisma: 100,
-                    defense: 45,
-                    intelligence: 60);
+                    skillPower: 50);
             case (Profile.Defense):
                 return new PlayerData(
                     Profile.Defense,
@@ -44,7 +36,7 @@ public static class PlayerDataFactory
                     strength: 120,
                     charisma: 60,
                     defense: 80,
-                    intelligence: 50);
+                    skillPower: 50);
             case (Profile.Intelligence):
                 return new PlayerData(
                     Profile.Intelligence,
@@ -52,7 +44,7 @@ public static class PlayerDataFactory
                     strength: 50,
                     charisma: 75,
                     defense: 30,
-                    intelligence: 110);
+                    skillPower: 110);
             default:
                 throw new System.ArgumentOutOfRangeException();
         }

@@ -18,11 +18,30 @@ public class BattleUnit : MonoBehaviour
 
     private Coroutine damageCoroutine;
 
+    public bool HasSkill { get; private set;  }
+    public PlayerSkillsData.Skill Skill { get; private set; }
+
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         originalPosition = transform.position;
         currentHP = Mathf.Clamp(currentHP, 0, maxHP);
+    }
+
+    public void SetSkill(PlayerSkillsData.Skill Skill)
+    {
+        Skill = Skill;
+        HasSkill = true;
+    }
+
+    public void Initialize(string name, int hp, int damage, int skill)
+    {
+        unitName = name;
+        maxHP = hp;
+        currentHP = hp;
+        attackPower = damage;
+        skillPower = skill;
+        SetSelected(false);
     }
 
     public void TakeDamage(int damage)

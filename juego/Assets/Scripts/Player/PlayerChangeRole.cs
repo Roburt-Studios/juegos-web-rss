@@ -2,12 +2,10 @@ using UnityEngine;
 
 public class PlayerChangeRole : MonoBehaviour
 {
-    public PlayerClassManager manager;
-
-    public int role;
+    [SerializeField] private Profile role;
 
     public void ChangeRole()
     {
-        manager.characterClass = (Profile)role;
+        PlayerClassManager.instance.characterClass = role;
     }
 }
