@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using Patterns.ServiceLocator;
 using TMPro;
 using UnityEngine;
@@ -20,25 +22,69 @@ public class InventoryUI : MonoBehaviour
     }
 
     private InventoryService inventory;
-    private Canvas inventoryCanvas;
+
+    [SerializeField]
+    private Image inventoryPanel;
+
+    [SerializeField]
+    private TMP_Text collectedItemText;
     private SlotView[] views;
     private bool slotsReady;
+    private GameObject inventoryContent;
+    private readonly Queue<ItemNotification> pendingNotifications = new Queue<ItemNotification>();
+    private Coroutine notificationRoutine;
+
+    private struct ItemNotification
+    {
+        public string Name;
+        public int Quantity;
+
+        public ItemNotification(string name, int quantity)
+        {
+            Name = name;
+            Quantity = quantity;
+        }
+    }
 
     private void Awake()
     {
-        inventoryCanvas = GetComponent<Canvas>();
         slotsReady = CacheSlotReferences();
+        inventoryContent =
+            inventoryPanel != null ? inventoryPanel.gameObject
+            : slotsReady ? slots[0].parent.gameObject
+            : null;
+
+        if (collectedItemText == null && slotsReady)
+        {
+            TextMeshProUGUI text = Instantiate(views[0].itemName, transform);
+            text.name = "CollectedItemText";
+            RectTransform rect = text.rectTransform;
+            rect.anchorMin = new Vector2(0.5f, 1f);
+            rect.anchorMax = new Vector2(0.5f, 1f);
+            rect.pivot = new Vector2(0.5f, 1f);
+            rect.anchoredPosition = new Vector2(0f, -40f);
+            rect.sizeDelta = new Vector2(600f, 70f);
+            text.alignment = TextAlignmentOptions.Center;
+            text.raycastTarget = false;
+            collectedItemText = text;
+        }
+
+        if (collectedItemText != null)
+            collectedItemText.gameObject.SetActive(false);
     }
 
     private void OnEnable()
     {
         if (input != null)
             input.InventoryEvent += ToggleInventory;
+        if (inventory != null)
+            inventory.ItemAdded += OnItemAdded;
     }
 
     private void Start()
     {
-        inventoryCanvas.enabled = false;
+        if (inventoryContent != null)
+            inventoryContent.SetActive(false);
         if (ServiceLocator.Instance == null)
         {
             Debug.LogError("InventoryUI: falta ServiceLocator en la escena.", this);
@@ -47,6 +93,7 @@ public class InventoryUI : MonoBehaviour
 
         inventory = ServiceLocator.Instance.GetService<InventoryService>();
         inventory.Changed += Refresh;
+        inventory.ItemAdded += OnItemAdded;
         Refresh();
     }
 
@@ -54,6 +101,16 @@ public class InventoryUI : MonoBehaviour
     {
         if (input != null)
             input.InventoryEvent -= ToggleInventory;
+        if (inventory != null)
+            inventory.ItemAdded -= OnItemAdded;
+        if (notificationRoutine != null)
+        {
+            StopCoroutine(notificationRoutine);
+            notificationRoutine = null;
+        }
+        pendingNotifications.Clear();
+        if (collectedItemText != null)
+            collectedItemText.gameObject.SetActive(false);
     }
 
     private void OnDestroy()
@@ -64,7 +121,29 @@ public class InventoryUI : MonoBehaviour
 
     private void ToggleInventory()
     {
-        inventoryCanvas.enabled = !inventoryCanvas.enabled;
+        if (inventoryContent != null)
+            inventoryContent.SetActive(!inventoryContent.activeSelf);
+    }
+
+    private void OnItemAdded(InventoryItem item, int quantity)
+    {
+        if (collectedItemText == null)
+            return;
+
+        pendingNotifications.Enqueue(new ItemNotification(item.displayName, quantity));
+        if (notificationRoutine == null)
+            notificationRoutine = StartCoroutine(ShowPendingNotifications());
+    }
+
+    private IEnumerator ShowPendingNotifications()
+    {
+        while (pendingNotifications.Count > 0)
+        {
+            ItemNotification notification = pendingNotifications.Dequeue();
+            yield return ShowNewItemCollectedCorrutine(notification.Name, notification.Quantity);
+        }
+
+        notificationRoutine = null;
     }
 
     private bool CacheSlotReferences()
@@ -117,5 +196,16 @@ public class InventoryUI : MonoBehaviour
             views[i].itemName.text = occupied ? slot.Item.displayName : "";
             views[i].quantity.text = occupied && slot.Quantity > 1 ? slot.Quantity.ToString() : "";
         }
+    }
+
+    public IEnumerator ShowNewItemCollectedCorrutine(string itemName, int quantity)
+    {
+        if (collectedItemText == null)
+            yield break;
+
+        collectedItemText.text = quantity > 1 ? "+{itemName} x{quantity}" : $"+: {itemName}";
+        collectedItemText.gameObject.SetActive(true);
+        yield return new WaitForSeconds(2f);
+        collectedItemText.gameObject.SetActive(false);
     }
 }

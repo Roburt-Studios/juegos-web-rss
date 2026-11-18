@@ -20,6 +20,7 @@ public class InventoryService : MonoBehaviour, IService
 
     private readonly Slot[] slots = new Slot[Capacity];
     public event Action Changed;
+    public event Action<InventoryItem, int> ItemAdded;
 
     public void Initialize()
     {
@@ -70,6 +71,7 @@ public class InventoryService : MonoBehaviour, IService
             remaining -= added;
         }
         Changed?.Invoke();
+        ItemAdded?.Invoke(item, quantity);
         return true;
     }
 
