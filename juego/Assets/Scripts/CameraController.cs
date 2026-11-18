@@ -29,7 +29,6 @@ public class CameraController : MonoBehaviour
     public float rotationSmoothness = 5f;
     public float maxRotationAngle = 80f;
 
-
     private float currentYaw;
     private float targetYaw;
     private float initialYaw;
@@ -127,12 +126,9 @@ public class CameraController : MonoBehaviour
 
     public void UpdateGameplayPosition()
     {
-
-        SetTargetPosition(
-            target.position + currentLookAhead);
+        SetTargetPosition(target.position + currentLookAhead);
         SetTargetPosition(target.position + currentLookAhead);
     }
-
 
     public void UpdateGameplayRotation()
     {
@@ -143,27 +139,17 @@ public class CameraController : MonoBehaviour
         {
             targetYaw += Mouse.current.delta.ReadValue().x * rotationSpeed;
 
-
             float relativeYaw = Mathf.DeltaAngle(initialYaw, targetYaw);
 
-            relativeYaw = Mathf.Clamp(
-                relativeYaw,
-                -maxRotationAngle,
-                maxRotationAngle
-            );
+            relativeYaw = Mathf.Clamp(relativeYaw, -maxRotationAngle, maxRotationAngle);
 
             targetYaw = initialYaw + relativeYaw;
         }
 
-        currentYaw = Mathf.LerpAngle(currentYaw, targetYaw, rotationSmoothness * Time.deltaTime
-        );
+        currentYaw = Mathf.LerpAngle(currentYaw, targetYaw, rotationSmoothness * Time.deltaTime);
 
-        SetTargetRotation(
-            Quaternion.Euler(45f, currentYaw, 0f)
-        );
+        SetTargetRotation(Quaternion.Euler(45f, currentYaw, 0f));
     }
-
-
 
     public void UpdateGameplayZoomInput()
     {
