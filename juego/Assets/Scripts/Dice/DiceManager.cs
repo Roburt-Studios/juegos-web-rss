@@ -1,4 +1,5 @@
 using System;
+using Patterns.ServiceLocator;
 using Patterns.ServiceLocator.Interfaces;
 using UnityEngine;
 
@@ -10,7 +11,7 @@ public class DiceManager : MonoBehaviour, IService
 
     void Awake()
     {
-        manager = FindFirstObjectByType<PlayerClassManager>();
+        manager = ServiceLocator.Instance.GetService<PlayerClassManager>();
     }
 
     public void Initialize() { }
@@ -23,7 +24,9 @@ public class DiceManager : MonoBehaviour, IService
     /// </summary>
     public DiceRoll Roll(bool applyCharisma)
     {
-        int charisma = applyCharisma ? PlayerDataFactory.GetData(manager.characterClass).Charisma : 0;
+        int charisma = applyCharisma
+            ? PlayerDataFactory.GetData(manager.characterClass).Charisma
+            : 0;
 
         int firstNum = MayIncreaseWithCharisma(charisma);
         int secondNum = MayIncreaseWithCharisma(charisma);

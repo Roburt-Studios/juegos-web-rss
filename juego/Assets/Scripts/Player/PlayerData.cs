@@ -3,7 +3,8 @@ public enum Profile
 {
     Strength,
     Defense,
-    Intelligence
+    Intelligence,
+    None
 }
 public class PlayerData
 {

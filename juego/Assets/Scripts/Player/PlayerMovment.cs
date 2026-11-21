@@ -30,6 +30,7 @@ public class PlayerMovment : MonoBehaviour
     private Animator animator;
     private CharacterController characterController;
 
+
     void Awake()
     {
         characterController = GetComponent<CharacterController>();

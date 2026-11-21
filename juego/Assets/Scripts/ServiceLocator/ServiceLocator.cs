@@ -25,6 +25,7 @@ namespace Patterns.ServiceLocator
 
             // Registro de servicios
             this.Register<DialogManager>(GetComponent<DialogManager>());
+            this.Register<PlayerClassManager>();
             InventoryService inventory = GetComponent<InventoryService>();
             if (inventory == null)
                 this.Register<InventoryService>();

@@ -1,15 +1,24 @@
+using JetBrains.Annotations;
+using Patterns.ServiceLocator.Interfaces;
 using UnityEngine;
 
-public class PlayerClassManager : MonoBehaviour
+public class PlayerClassManager : MonoBehaviour, IService
 {
     public static PlayerClassManager instance;
 
-    public Profile characterClass;
+    public Profile characterClass = Profile.None;
 
     public int selectedSkill = -1;
 
-    public int savedHP = -1;
+    public int savedHP = 100;
 
+    public void Initialize() 
+    {
+        if(characterClass == Profile.None)
+        {
+            characterClass = Profile.Intelligence;
+        }
+    }
     private void Awake()
     {
         if(instance == null)
