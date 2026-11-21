@@ -12,6 +12,10 @@ public class BattleManager : MonoBehaviour
     private CombatEncounter activeEncounter;
     private Canvas battleCanvas;
 
+    [Header("Distribución de enemigos")]
+    [SerializeField, Min(0f)]
+    private float enemySpacing = 200f;
+
     [SerializeField]
     private InputReader input;
 
@@ -103,13 +107,16 @@ public class BattleManager : MonoBehaviour
             if (!used)
                 continue;
             CombatEncounter.Opponent opponent = opponents[i];
+            float centeredIndex = i - (opponents.Length - 1) / 2f;
+            enemySlots[i].SetHorizontalPosition(centeredIndex * enemySpacing);
             enemySlots[i]
                 .Initialize(
                     opponent.unitName,
                     opponent.maxHP,
                     opponent.defense,
                     opponent.attackPower,
-                    opponent.skillPower
+                    opponent.skillPower,
+                    opponent.battleSprite
                 );
         }
 

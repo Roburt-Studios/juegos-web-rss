@@ -1,6 +1,5 @@
-
-using UnityEngine;
 using System.Collections;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class BattleUnit : MonoBehaviour
@@ -13,20 +12,31 @@ public class BattleUnit : MonoBehaviour
     public int skillPower = 25;
     public int defense = 0;
 
+    [Header("Apariencia")]
+    [SerializeField]
+    private Sprite battleSprite;
+
     public bool IsAlive => currentHP > 0;
 
     private Image image;
+    private Sprite defaultSprite;
     private RectTransform rectTransform;
     private Vector2 originalPosition;
 
     private Coroutine damageCoroutine;
 
-    public bool HasSkill { get; private set;  }
-    public PlayerSkillsData.Skill Skill { get; private set;  }
+    public bool HasSkill { get; private set; }
+    public PlayerSkillsData.Skill Skill { get; private set; }
 
     private void Awake()
     {
         image = GetComponent<Image>();
+        if (image != null)
+        {
+            defaultSprite = image.sprite;
+            if (battleSprite != null)
+                image.sprite = battleSprite;
+        }
         rectTransform = GetComponent<RectTransform>();
 
         originalPosition = rectTransform.localPosition;
@@ -34,7 +44,14 @@ public class BattleUnit : MonoBehaviour
         currentHP = Mathf.Clamp(currentHP, 0, maxHP);
     }
 
-    public void Initialize(string name, int hp, int def, int damage, int skill)
+    public void Initialize(
+        string name,
+        int hp,
+        int def,
+        int damage,
+        int skill,
+        Sprite opponentSprite = null
+    )
     {
         unitName = name;
         maxHP = hp;
@@ -42,7 +59,20 @@ public class BattleUnit : MonoBehaviour
         defense = def;
         attackPower = damage;
         skillPower = skill;
+        if (image != null)
+            image.sprite =
+                opponentSprite != null ? opponentSprite
+                : battleSprite != null ? battleSprite
+                : defaultSprite;
         SetSelected(false);
+    }
+
+    public void SetHorizontalPosition(float x)
+    {
+        Vector2 position = rectTransform.anchoredPosition;
+        position.x = x;
+        rectTransform.anchoredPosition = position;
+        originalPosition = rectTransform.localPosition;
     }
 
     public void SetSkill(PlayerSkillsData.Skill skill)
@@ -53,7 +83,8 @@ public class BattleUnit : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
-        if (!IsAlive) return;
+        if (!IsAlive)
+            return;
 
         if (defense > 0)
         {
@@ -66,7 +97,8 @@ public class BattleUnit : MonoBehaviour
 
     public void Heal(int amount)
     {
-        if (!IsAlive) return;
+        if (!IsAlive)
+            return;
 
         currentHP = Mathf.Min(maxHP, currentHP + amount);
         UpdateAppearance();
@@ -85,11 +117,7 @@ public class BattleUnit : MonoBehaviour
         {
             float t = elapsed / duration;
 
-            rectTransform.localPosition = Vector2.Lerp(
-                startPosition,
-                attackPosition,
-                t
-            );
+            rectTransform.localPosition = Vector2.Lerp(startPosition, attackPosition, t);
 
             elapsed += Time.deltaTime;
             yield return null;
@@ -104,11 +132,7 @@ public class BattleUnit : MonoBehaviour
         {
             float t = elapsed / duration;
 
-            rectTransform.localPosition = Vector2.Lerp(
-                attackPosition,
-                startPosition,
-                t
-            );
+            rectTransform.localPosition = Vector2.Lerp(attackPosition, startPosition, t);
 
             elapsed += Time.deltaTime;
             yield return null;
@@ -119,14 +143,13 @@ public class BattleUnit : MonoBehaviour
 
     public void SetSelected(bool selected)
     {
-        if (image == null) return;
+        if (image == null)
+            return;
 
         if (!IsAlive)
             image.color = Color.gray;
         else
-            image.color = selected
-                ? Color.yellow
-                : Color.white;
+            image.color = selected ? Color.yellow : Color.white;
     }
 
     private void UpdateAppearance()
@@ -153,6 +176,7 @@ public class BattleUnit : MonoBehaviour
 
         damageCoroutine = StartCoroutine(DamageEffect());
     }
+
     private IEnumerator DamageEffect()
     {
         image.color = Color.red;
@@ -164,8 +188,7 @@ public class BattleUnit : MonoBehaviour
         {
             float x = Mathf.Sin(elapsed * 60f) * 8f;
 
-            rectTransform.localPosition =
-                originalPosition + new Vector2(x, 0f);
+            rectTransform.localPosition = originalPosition + new Vector2(x, 0f);
 
             elapsed += Time.deltaTime;
 
@@ -177,7 +200,4 @@ public class BattleUnit : MonoBehaviour
 
         damageCoroutine = null;
     }
-
-    
 }
-

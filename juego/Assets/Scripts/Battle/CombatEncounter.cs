@@ -10,6 +10,7 @@ public class CombatEncounter : MonoBehaviour
     {
         public GameObject worldObject;
         public string unitName = "Enemigo";
+        public Sprite battleSprite;
 
         [Min(1)]
         public int maxHP = 40;
