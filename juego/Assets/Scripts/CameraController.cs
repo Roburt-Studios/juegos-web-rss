@@ -27,7 +27,7 @@ public class CameraController : MonoBehaviour
     public Transform pivot;
     public float rotationSpeed = 0.25f;
     public float rotationSmoothness = 5f;
-    public float maxRotationAngle = 80f;
+    //public float maxRotationAngle = 80f;
 
     private float currentYaw;
     private float targetYaw;
@@ -141,7 +141,7 @@ public class CameraController : MonoBehaviour
 
             float relativeYaw = Mathf.DeltaAngle(initialYaw, targetYaw);
 
-            relativeYaw = Mathf.Clamp(relativeYaw, -maxRotationAngle, maxRotationAngle);
+            //relativeYaw = Mathf.Clamp(relativeYaw, -maxRotationAngle, maxRotationAngle);
 
             targetYaw = initialYaw + relativeYaw;
         }
