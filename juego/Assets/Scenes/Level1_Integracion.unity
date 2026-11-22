@@ -45653,7 +45653,7 @@ MonoBehaviour:
     attackPower: 5
     skillPower: 15
   dropableItem: {fileID: 11400000, guid: 5f83fe4c16044183a6d342a443ee1e0e, type: 2}
-  quantity: 0
+  quantity: 1
 --- !u!114 &1520379215
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -51345,7 +51345,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9e0a392bf42aef609b0e486068b66b70, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AttackOrTalk
   canvas: {fileID: 1223519596}
   attackButton: {fileID: 1953688858}
@@ -51364,7 +51364,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4b6a36031b144cc4b76555a595ddcb17, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CombatEncounter
   opponents:
   - worldObject: {fileID: 1763248064}
@@ -51386,7 +51386,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 498868328ae0aadabbb052c424d77392, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TalkToEnemy
   dialogId: D2
 --- !u!136 &1763248068
@@ -51429,7 +51429,7 @@ Animator:
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0
-  m_WarningMessage:
+  m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
