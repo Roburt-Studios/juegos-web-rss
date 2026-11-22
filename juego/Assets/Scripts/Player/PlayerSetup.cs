@@ -21,7 +21,7 @@ public class PlayerSetup : MonoBehaviour
 
         GetComponent<BattleUnit>().Initialize
             (
-            name: data.CharacterClass.ToString(),
+            name: data.ClassDisplayName,
             hp: data.InitialHealth,
             mana: data.InitialMana,
             def: data.Defense,

@@ -245,7 +245,7 @@ public class BattleManager : MonoBehaviour
 
         int baseDamage = Mathf.RoundToInt(actor.skillPower * multiplier);
 
-        string action = "usa" + skill.SkillName + (critic ? "(CRÍTICO)" : "") + " contra";
+        string action = "usa " + skill.SkillName + (critic ? " (CRÍTICO)" : "") + " contra";
 
         return DealPlayerDamage(actor, target, baseDamage, action);
     }

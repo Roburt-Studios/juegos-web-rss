@@ -10,6 +10,14 @@ public class PlayerData
 {
     public Profile CharacterClass {  get; private set; }
 
+    public string ClassDisplayName => CharacterClass switch
+    {
+        Profile.Strength => "Forzudo",
+        Profile.Defense => "Tanque",
+        Profile.Intelligence => "Charlatan",
+        _ => CharacterClass.ToString()
+    };
+
     public int InitialHealth { get; private set; }
     public int InitialMana { get; private set; }
 

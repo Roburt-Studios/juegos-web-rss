@@ -82,17 +82,23 @@ public class DialogManager : MonoBehaviour, IService
             AdvanceDialog();
     }
 
-    public void StartDialog(string dialogId, CombatEncounter encounter = null)
+    public bool StartDialog(string dialogId, CombatEncounter encounter = null)
     {
         if (inDialog || uiController == null || dialogDB == null)
-            return;
+        {
+            Debug.LogError($"DialogManager: no se puede iniciar {dialogId}; diálogo activo o interfaz/base de datos sin inicializar.", this);
+            return false;
+        }
 
         currentDialog = dialogDB.GetDialog(dialogId);
         if (
             currentDialog == null
             || !currentDialog.TryGetNode(currentDialog.startNodeId, out currentNode)
         )
-            return;
+        {
+            Debug.LogError($"DialogManager: diálogo {dialogId} sin nodo inicial válido.", this);
+            return false;
+        }
 
         currentEncounter = encounter;
 
@@ -105,6 +111,7 @@ public class DialogManager : MonoBehaviour, IService
         lastCompletionFrame = -1;
         lastAdvanceTime = Time.time;
         ShowCurrentNode();
+        return true;
     }
 
     public void AdvanceDialog()

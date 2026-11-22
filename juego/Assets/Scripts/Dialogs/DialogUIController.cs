@@ -26,6 +26,7 @@ public class DialogUIController : MonoBehaviour
     {
         manager = dialogManager;
         dialogCanvas = GetComponent<Canvas>();
+        dialogCanvas.sortingOrder = 21;
         nextButton.onClick.RemoveListener(manager.AdvanceDialog);
         nextButton.onClick.AddListener(manager.AdvanceDialog);
         dialogCanvas.enabled = false;
@@ -40,6 +41,7 @@ public class DialogUIController : MonoBehaviour
         }
 
         ClearOptions();
+        dialogCanvas.sortingOrder = 21;
         dialogCanvas.enabled = true;
         dialogBox.gameObject.SetActive(true);
         nextButton.gameObject.SetActive(!node.isChoice);

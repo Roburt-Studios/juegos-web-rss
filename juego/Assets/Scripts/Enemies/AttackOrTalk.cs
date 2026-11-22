@@ -55,6 +55,7 @@ public class AttackOrTalk : MonoBehaviour, IInteractable
             return;
         }
 
+        canvas.sortingOrder = 20;
         canvas.enabled = true;
         input.DisableAllInput();
         attackButton?.onClick.AddListener(Attack);
@@ -81,11 +82,14 @@ public class AttackOrTalk : MonoBehaviour, IInteractable
         {
             Debug.LogError("Talk Component no attachado");
             CloseMenu();
+            input.EnableGameplayInput();
             return;
         }
 
-        talkComponent.Talk();
+        bool dialogStarted = talkComponent.Talk();
         CloseMenu();
+        if (!dialogStarted)
+            input.EnableGameplayInput();
     }
 
     public void Cancel()

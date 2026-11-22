@@ -9,12 +9,15 @@ public class TalkToEnemy : MonoBehaviour
     private DialogManager dialogManager;
     private bool talked = false;
 
-    public void Talk()
+    public bool Talk()
     {
         string dialog = !talked ? dialogId : "DHablado";
         dialogManager = ServiceLocator.Instance.GetService<DialogManager>();
 
-        dialogManager.StartDialog(dialog, GetComponent<CombatEncounter>());
+        if (!dialogManager.StartDialog(dialog, GetComponent<CombatEncounter>()))
+            return false;
+
         talked = true;
+        return true;
     }
 }

@@ -78,19 +78,14 @@ Shader "Stylized/Palette Dither"
                 return output;
             }
 
-            static const int Bayer4x4[16] = {
-                 0,  8,  2, 10,
-                12,  4, 14,  6,
-                 3, 11,  1,  9,
-                15,  7, 13,  5
-            };
-
             float DitherThreshold(float2 screenPosition)
             {
-                int2 pixel = (int2)floor(screenPosition / _DitherScale);
-                int x = pixel.x % 4;
-                int y = pixel.y % 4;
-                return (Bayer4x4[y * 4 + x] + 0.5) / 16.0;
+                float2 pixel = floor(screenPosition / max(_DitherScale, 1.0));
+                float2 lowBits = frac(pixel * 0.5) * 2.0;
+                float2 highBits = frac(floor(pixel * 0.5) * 0.5) * 2.0;
+                float value = 8.0 * abs(lowBits.x - lowBits.y) + 4.0 * lowBits.y
+                    + 2.0 * abs(highBits.x - highBits.y) + highBits.y;
+                return (value + 0.5) / 16.0;
             }
 
             half4 Frag(Varyings input) : SV_Target
