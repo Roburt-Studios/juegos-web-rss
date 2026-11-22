@@ -164,7 +164,7 @@ public class CameraController : MonoBehaviour
 
         //currentYaw = Mathf.LerpAngle(currentYaw, targetYaw, rotationSmoothness * Time.deltaTime);
 
-        SetTargetRotation(Quaternion.Euler(45f, targetYaw, 0f));
+        SetTargetRotation(Quaternion.Euler(pitch, targetYaw, 0f));
     }
 
     public void UpdateGameplayZoomInput()
@@ -232,7 +232,7 @@ public class CameraController : MonoBehaviour
         }
 
         Vector3 pos = cam.transform.localPosition;
-        pos.z = -currentZoom;
+        pos.z = -collisionDistance;
         cam.transform.localPosition = pos;
     }
 

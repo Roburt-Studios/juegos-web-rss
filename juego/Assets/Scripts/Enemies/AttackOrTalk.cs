@@ -21,12 +21,30 @@ public class AttackOrTalk : MonoBehaviour, IInteractable
     [SerializeField]
     private InputReader input;
 
-    [SerializeField] private BattleManager battleManager;
-    private static AttackOrTalk menuOwner;
+    [SerializeField]
+    private BattleManager battleManager;
+
+    [SerializeField]
+    private Transform playerTransform;
+
+    void Update()
+    {
+        Vector3 direction = playerTransform.position - transform.position;
+        direction.y = 0f;
+        if (direction.sqrMagnitude < 0.0001f)
+            return;
+
+        Quaternion targetRotation = Quaternion.LookRotation(direction, Vector3.up);
+        transform.rotation = Quaternion.RotateTowards(
+            transform.rotation,
+            targetRotation,
+            720f * Time.deltaTime
+        );
+    }
 
     private void OnDisable()
     {
-        if (menuOwner == this) CloseMenu();
+        CloseMenu();
     }
 
     public void Interacted()
@@ -37,8 +55,6 @@ public class AttackOrTalk : MonoBehaviour, IInteractable
             return;
         }
 
-        if (menuOwner != null) menuOwner.CloseMenu();
-        menuOwner = this;
         canvas.enabled = true;
         input.DisableAllInput();
         attackButton?.onClick.AddListener(Attack);
@@ -80,8 +96,6 @@ public class AttackOrTalk : MonoBehaviour, IInteractable
 
     private void CloseMenu()
     {
-        if (menuOwner != this) return;
-        menuOwner = null;
         if (canvas != null)
             canvas.enabled = false;
 
