@@ -25,12 +25,23 @@ namespace Patterns.ServiceLocator
 
             // Registro de servicios
             this.Register<DialogManager>(GetComponent<DialogManager>());
-            this.Register<PlayerClassManager>();
+            PlayerClassManager playerClass = PlayerClassManager.instance;
+            if (playerClass == null)
+                playerClass = FindFirstObjectByType<PlayerClassManager>();
+            if (playerClass == null)
+                playerClass = new GameObject("PlayerClassManager").AddComponent<PlayerClassManager>();
+            this.Register(playerClass);
             InventoryService inventory = GetComponent<InventoryService>();
             if (inventory == null)
                 this.Register<InventoryService>();
             else
                 this.Register(inventory);
+        }
+
+        private void OnDestroy()
+        {
+            if (Instance == this)
+                Instance = null;
         }
 
         void Start() { }
