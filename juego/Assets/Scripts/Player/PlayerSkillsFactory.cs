@@ -29,21 +29,24 @@ public class PlayerSkillsFactory : MonoBehaviour
                             skillName: "Stab",
                             skillDescription: "Cuts apart the flesh of one foe, deals great damage with low chance of critic",
                             attackPower: 2f,
-                            critic: 25
+                            critic: 25,
+                            manaCost: 30
                         ),
 
                         new PlayerSkillsData.Skill(
                             skillName: "Tear",
                             skillDescription: "Tears apart the body of one foe, deals medium damage and medium chance of critic",
                             attackPower: 1.3f,
-                            critic: 50
+                            critic: 50,
+                            manaCost: 20
                         ),
 
                         new PlayerSkillsData.Skill(
                             skillName: "Crush",
                             skillDescription: "Crushes the bones of one foe, deals high damage and low chance of critic",
                             attackPower: 1.8f,
-                            critic: 30)
+                            critic: 30,
+                            manaCost: 25)
                     });
 
             case (Profile.Defense):
@@ -53,19 +56,22 @@ public class PlayerSkillsFactory : MonoBehaviour
                             skillName: "Stomp",
                             skillDescription: "Destroys the limps of one foe, deals low damage and medium chance of critic",
                             attackPower: 1.2f,
-                            critic: 30),
+                            critic: 30,
+                            manaCost: 20),
 
                         new PlayerSkillsData.Skill(
                             skillName: "Pound",
                             skillDescription: "Pulverizes one foe, deals medium damage and low chance of critic",
                             attackPower: 1.4f,
-                            critic: 15),
+                            critic: 15,
+                            manaCost: 25),
 
                         new PlayerSkillsData.Skill(
                             skillName: "Charge",
                             skillDescription: "Acts like a bull and attack one foe, deals medium damage and low chance of critic",
                             attackPower: 1.6f,
-                            critic: 10)
+                            critic: 10,
+                            manaCost: 30)
                     });
 
             case (Profile.Intelligence):
@@ -75,19 +81,22 @@ public class PlayerSkillsFactory : MonoBehaviour
                             skillName: "Puncture",
                             skillDescription: "Punctures through weak parts of one foe, deals low damage and high chance of critic",
                             attackPower: 1.1f,
-                            critic: 70),
+                            critic: 70,
+                            manaCost: 20),
 
                         new PlayerSkillsData.Skill(
                             skillName: "Pierce",
                             skillDescription: "Pierces through the body of one foe, deals low damage and moderate chance of critic",
                             attackPower: 1.2f,
-                            critic: 60),
+                            critic: 60,
+                            manaCost: 25),
 
                         new PlayerSkillsData.Skill(
                             skillName: "Shoot",
                             skillDescription: "Shoots at one foe, deals medium damage and medium chance of critic",
                             attackPower: 1.4f,
-                            critic: 45)
+                            critic: 45,
+                            manaCost: 30)
                     });
             default:
                 throw new System.ArgumentOutOfRangeException();

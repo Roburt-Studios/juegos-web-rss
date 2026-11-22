@@ -970,6 +970,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f35a966d9e494d5fa40caf53010565f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InventoryService
+  startingPotion: {fileID: 11400000, guid: d4c6e5f187ab4d7aa28bd9c6017e7a19, type: 2}
+  startingPotionQuantity: 2
 --- !u!1001 &26406650
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10843,6 +10845,8 @@ MonoBehaviour:
   unitName: Enemigo2
   maxHP: 100
   currentHP: 100
+  maxMP: 40
+  currentMP: 40
   attackPower: 2
   skillPower: 2
   defense: 0
@@ -23611,6 +23615,7 @@ MonoBehaviour:
   characterClass: 2
   selectedSkill: -1
   savedHP: 100
+  savedMP: -1
 --- !u!4 &815859225
 Transform:
   m_ObjectHideFlags: 0
@@ -44903,11 +44908,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CombatEncounter
   opponents:
   - worldObject: {fileID: 1520379212}
-    unitName: Guardia
-    battleSprite: {fileID: 0}
-    maxHP: 75
-    defense: 0
-    attackPower: 11
+    unitName: Acechador
+    battleSprite: {fileID: 21300000, guid: 3e9660bd7558b8383ac633340b0af85a, type: 3}
+    maxHP: 200
+    defense: 1
+    attackPower: 20
+    skillPower: 15
+  - worldObject: {fileID: 1520379212}
+    unitName: "Le\xF3n"
+    battleSprite: {fileID: 21300000, guid: 39c8e2d4c59105291892eda4a0a8c829, type: 3}
+    maxHP: 400
+    defense: 5
+    attackPower: 5
     skillPower: 15
   dropableItem: {fileID: 0}
   quantity: 0
@@ -50571,12 +50583,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CombatEncounter
   opponents:
-  - worldObject: {fileID: 0}
-    unitName: GRAVVOK
+  - worldObject: {fileID: 1763248064}
+    unitName: Sectario
     battleSprite: {fileID: 21300000, guid: 6f5102d25b48c1126bee2745e3ca2b80, type: 3}
-    maxHP: 55
-    defense: 0
-    attackPower: 8
+    maxHP: 300
+    defense: 1
+    attackPower: 10
     skillPower: 15
   dropableItem: {fileID: 0}
   quantity: 0
@@ -52080,6 +52092,8 @@ MonoBehaviour:
   unitName: Enemigo2
   maxHP: 100
   currentHP: 100
+  maxMP: 40
+  currentMP: 40
   attackPower: 2
   skillPower: 2
   defense: 0
@@ -65065,6 +65079,8 @@ MonoBehaviour:
   unitName: Aliado1
   maxHP: 100
   currentHP: 100
+  maxMP: 40
+  currentMP: 40
   attackPower: 15
   skillPower: 25
   defense: 0
@@ -65112,11 +65128,14 @@ MonoBehaviour:
   enemies:
   - {fileID: 3000000069}
   - {fileID: 3000000074}
+  - {fileID: 325402477}
+  - {fileID: 1788987663}
   enemySpacing: 200
   input: {fileID: 11400000, guid: cc7625a68fba57e20883654ef904866f, type: 2}
   explorationCamera: {fileID: 1553815352}
   battleUI: {fileID: 3000000015}
   diceManager: {fileID: 3000000008}
+  potionItem: {fileID: 11400000, guid: d4c6e5f187ab4d7aa28bd9c6017e7a19, type: 2}
 --- !u!4 &3000000007
 Transform:
   m_ObjectHideFlags: 0
@@ -65351,7 +65370,7 @@ Canvas:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3000000014}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 3
   m_RenderMode: 0
   m_Camera: {fileID: 0}
@@ -66365,7 +66384,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 800, y: 440}
+  m_SizeDelta: {x: 800, y: 447.62}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &3000000052
 MonoBehaviour:
@@ -66855,6 +66874,8 @@ MonoBehaviour:
   unitName: Enemigo1
   maxHP: 100
   currentHP: 100
+  maxMP: 40
+  currentMP: 40
   attackPower: 2
   skillPower: 2
   defense: 0
@@ -66950,6 +66971,8 @@ MonoBehaviour:
   unitName: Enemigo2
   maxHP: 100
   currentHP: 100
+  maxMP: 40
+  currentMP: 40
   attackPower: 2
   skillPower: 2
   defense: 0

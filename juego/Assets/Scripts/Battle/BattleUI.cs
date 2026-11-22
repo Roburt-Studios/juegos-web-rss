@@ -1,4 +1,3 @@
-
 using System.Text;
 using TMPro;
 using UnityEngine;
@@ -17,30 +16,19 @@ public class BattleUI : MonoBehaviour
     public Button potionButton;
     public Button specialButton;
 
-
     private BattleManager manager;
 
     public void Initialize(BattleManager battleManager)
     {
         manager = battleManager;
 
-        attackButton.onClick.AddListener(
-            () => manager.Attack()
-        );
+        attackButton.onClick.AddListener(() => manager.Attack());
 
-        defendButton.onClick.AddListener(
-            () => manager.Defend()
-        );
+        defendButton.onClick.AddListener(() => manager.Defend());
 
-        potionButton.onClick.AddListener(
-            () => manager.UsePotion()
-        );
+        potionButton.onClick.AddListener(() => manager.UsePotion());
 
-        specialButton.onClick.AddListener(
-            () => manager.UseSpecial()
-        );
-
-
+        specialButton.onClick.AddListener(() => manager.UseSpecial());
     }
 
     private void Update()
@@ -61,21 +49,21 @@ public class BattleUI : MonoBehaviour
             manager.SelectPreviousTarget();
         }
 
-        if (Input.GetKeyDown(KeyCode.Return) ||
-            Input.GetKeyDown(KeyCode.KeypadEnter))
+        if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
         {
             manager.ConfirmAction();
         }
     }
 
     public void Refresh(
-            BattleUnit[] party,
-            BattleUnit[] enemies,
-            BattleUnit target,
-            string message,
-            bool playerTurn,
-            bool potionAvailable
-            )
+        BattleUnit[] party,
+        BattleUnit[] enemies,
+        BattleUnit target,
+        BattleUnit actor,
+        string message,
+        bool playerTurn,
+        bool potionAvailable
+    )
     {
         statusText.text = message;
 
@@ -84,10 +72,10 @@ public class BattleUI : MonoBehaviour
 
         attackButton.interactable = playerTurn;
 
-        specialButton.interactable = playerTurn;
+        specialButton.interactable = playerTurn && actor != null && actor.CanUseSkill;
 
         potionButton.interactable =
-            playerTurn && potionAvailable;
+            playerTurn && potionAvailable && actor != null && actor.currentHP < actor.maxHP;
 
         defendButton.interactable = playerTurn;
 
@@ -97,10 +85,7 @@ public class BattleUI : MonoBehaviour
                 continue;
 
             enemy.SetSelected(
-                playerTurn &&
-                target != null &&
-                enemy == target &&
-                manager.IsSelectingTarget
+                playerTurn && target != null && enemy == target && manager.IsSelectingTarget
             );
         }
     }
@@ -111,7 +96,8 @@ public class BattleUI : MonoBehaviour
 
         foreach (BattleUnit unit in units)
         {
-            if (unit == null) continue;
+            if (unit == null)
+                continue;
 
             builder.Append(unit.unitName);
             builder.Append("  ");
@@ -119,6 +105,15 @@ public class BattleUI : MonoBehaviour
             builder.Append("/");
             builder.Append(unit.maxHP);
             builder.Append(" HP");
+            if (unit.maxMP > 0)
+            {
+                builder.AppendLine();
+                builder.Append("Maná ");
+                builder.Append(unit.currentMP);
+                builder.Append("/");
+                builder.Append(unit.maxMP);
+                builder.Append(" MP");
+            }
 
             if (!unit.IsAlive)
                 builder.Append("  KO");

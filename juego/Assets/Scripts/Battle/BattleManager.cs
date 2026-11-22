@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Patterns.ServiceLocator;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -28,6 +29,11 @@ public class BattleManager : MonoBehaviour
     [Header("Dados")]
     [SerializeField]
     private DiceManager diceManager;
+
+    [Header("Pociones")]
+    [SerializeField] private InventoryItem potionItem;
+
+    private InventoryService inventory;
 
     private int partyIndex;
     private int targetIndex;
@@ -74,6 +80,8 @@ public class BattleManager : MonoBehaviour
         }
 
         battleUI.Initialize(this);
+        if (ServiceLocator.Instance != null)
+            inventory = ServiceLocator.Instance.GetService<InventoryService>();
         enemySlots = (BattleUnit[])enemies.Clone();
         battleCanvas = battleUI.GetComponent<Canvas>();
         if (battleCanvas != null)
@@ -113,6 +121,7 @@ public class BattleManager : MonoBehaviour
                 .Initialize(
                     opponent.unitName,
                     opponent.maxHP,
+                    0,
                     opponent.defense,
                     opponent.attackPower,
                     opponent.skillPower,
@@ -167,6 +176,12 @@ public class BattleManager : MonoBehaviour
         if (!CanPlayerAct())
             return;
 
+        if (!CurrentActor.CanUseSkill)
+        {
+            RefreshUI("No tienes maná suficiente para usar la habilidad.");
+            return;
+        }
+
         if (pendingAction == PendingAction.None)
         {
             pendingAction = PendingAction.Special;
@@ -194,6 +209,12 @@ public class BattleManager : MonoBehaviour
         }
         else if (pendingAction == PendingAction.Special)
         {
+            if (!actor.SpendMana(actor.SkillManaCost))
+            {
+                pendingAction = PendingAction.None;
+                RefreshUI("No tienes maná suficiente para usar la habilidad.");
+                return;
+            }
             message = UseSkill(actor, target);
         }
         else
@@ -240,14 +261,19 @@ public class BattleManager : MonoBehaviour
 
     public void UsePotion()
     {
-        //TODO: Meter pociones del inventario
         if (!CanPlayerAct() || !potionAvailable)
             return;
 
         BattleUnit actor = CurrentActor;
+        if (actor.currentHP >= actor.maxHP)
+            return;
 
-        actor.Heal(35);
+        if (inventory == null || !inventory.Remove(potionItem))
+            return;
+
+        actor.Heal(60);
         potionAvailable = false;
+        pendingAction = PendingAction.None;
 
         AfterPlayerAction(actor.unitName + " usa una poción y recupera vida.");
     }
@@ -506,9 +532,10 @@ public class BattleManager : MonoBehaviour
             party,
             enemies,
             CurrentTarget,
+            CurrentActor,
             message,
             playerTurn && !battleEnded,
-            potionAvailable
+            potionAvailable && inventory != null && inventory.GetQuantity(potionItem) > 0
         );
     }
 

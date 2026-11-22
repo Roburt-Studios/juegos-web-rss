@@ -6,6 +6,10 @@ public class InventoryService : MonoBehaviour, IService
 {
     public const int Capacity = 10;
 
+    [Header("Inventario inicial")]
+    [SerializeField] private InventoryItem startingPotion;
+    [SerializeField, Min(0)] private int startingPotionQuantity = 2;
+
     public struct Slot
     {
         public InventoryItem Item { get; }
@@ -25,6 +29,20 @@ public class InventoryService : MonoBehaviour, IService
     public void Initialize()
     {
         Debug.Log("Starting inventory service");
+        if (startingPotion != null && startingPotionQuantity > 0)
+            Add(startingPotion, startingPotionQuantity);
+    }
+
+    public int GetQuantity(InventoryItem item)
+    {
+        if (item == null)
+            return 0;
+
+        int quantity = 0;
+        for (int i = 0; i < Capacity; i++)
+            if (slots[i].Item == item)
+                quantity += slots[i].Quantity;
+        return quantity;
     }
 
     public Slot GetSlot(int index)

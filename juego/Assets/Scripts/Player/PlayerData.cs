@@ -11,6 +11,7 @@ public class PlayerData
     public Profile CharacterClass {  get; private set; }
 
     public int InitialHealth { get; private set; }
+    public int InitialMana { get; private set; }
 
     public int Strength { get; private set; }
 
@@ -23,6 +24,7 @@ public class PlayerData
     public PlayerData(
         Profile characterClass,
         int initialHealth,
+        int initialMana,
         int strength,
         int charisma,
         int defense,
@@ -31,6 +33,7 @@ public class PlayerData
     {
         CharacterClass = characterClass;
         InitialHealth = initialHealth;
+        InitialMana = initialMana;
         Strength = strength;
         Charisma = charisma;
         Defense = defense;

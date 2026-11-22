@@ -23,6 +23,7 @@ public class PlayerSetup : MonoBehaviour
             (
             name: data.CharacterClass.ToString(),
             hp: data.InitialHealth,
+            mana: data.InitialMana,
             def: data.Defense,
             damage: data.Strength,
             skill: data.SkillPower
@@ -33,6 +34,8 @@ public class PlayerSetup : MonoBehaviour
         if (idx >= 0 && idx < skills.Count) unit.SetSkill(skills[idx]);
 
         if (PlayerClassManager.instance != null && PlayerClassManager.instance.savedHP > 0) unit.currentHP = Mathf.Min(PlayerClassManager.instance.savedHP, unit.maxHP);
+        if (PlayerClassManager.instance != null && PlayerClassManager.instance.savedMP >= 0)
+            unit.currentMP = Mathf.Min(PlayerClassManager.instance.savedMP, unit.maxMP);
     }
 
     private void OnDestroy()
@@ -40,6 +43,7 @@ public class PlayerSetup : MonoBehaviour
         if(PlayerClassManager.instance != null && unit != null)
         {
             PlayerClassManager.instance.savedHP = unit.currentHP;
+            PlayerClassManager.instance.savedMP = unit.currentMP;
         }
     }
 }

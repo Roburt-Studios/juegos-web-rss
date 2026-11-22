@@ -11,6 +11,7 @@ public class PlayerClassManager : MonoBehaviour, IService
     public int selectedSkill = -1;
 
     public int savedHP = 100;
+    public int savedMP = -1;
 
     public void Initialize() 
     {

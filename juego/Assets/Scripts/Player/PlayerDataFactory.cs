@@ -25,6 +25,7 @@ public static class PlayerDataFactory
                 return new PlayerData(
                     Profile.Strength,
                     initialHealth: 100,
+                    initialMana: 40,
                     strength: 120,
                     charisma: 35,
                     defense: 65,
@@ -33,6 +34,7 @@ public static class PlayerDataFactory
                 return new PlayerData(
                     Profile.Defense,
                     initialHealth: 150,
+                    initialMana: 40,
                     strength: 120,
                     charisma: 60,
                     defense: 80,
@@ -41,6 +43,7 @@ public static class PlayerDataFactory
                 return new PlayerData(
                     Profile.Intelligence,
                     initialHealth: 80,
+                    initialMana: 80,
                     strength: 50,
                     charisma: 75,
                     defense: 30,

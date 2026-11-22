@@ -9,13 +9,15 @@ public class PlayerSkillsData
         public string SkillDescription { get; private set;  }
         public float AttackPower { get; private set;  }
         public int Critic { get; private set;  }
+        public int ManaCost { get; private set; }
 
-        public Skill(string skillName, string skillDescription, float attackPower, int critic)
+        public Skill(string skillName, string skillDescription, float attackPower, int critic, int manaCost)
         {
             SkillName = skillName; //Nombre de la habilidad
             SkillDescription = skillDescription;//Descripción de la habilidad
             AttackPower = attackPower; //Multiplicación al daño base
             Critic = critic; //Probabilidad de efectuar un impacto crítico
+            ManaCost = manaCost;
         }
     }
 

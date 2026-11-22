@@ -8,6 +8,8 @@ public class BattleUnit : MonoBehaviour
     public string unitName = "Combatiente";
     public int maxHP = 100;
     public int currentHP = 100;
+    public int maxMP = 40;
+    public int currentMP = 40;
     public int attackPower = 15;
     public int skillPower = 25;
     public int defense = 0;
@@ -27,6 +29,8 @@ public class BattleUnit : MonoBehaviour
 
     public bool HasSkill { get; private set; }
     public PlayerSkillsData.Skill Skill { get; private set; }
+    public int SkillManaCost => HasSkill ? Skill.ManaCost : 20;
+    public bool CanUseSkill => IsAlive && currentMP >= SkillManaCost;
 
     private void Awake()
     {
@@ -42,11 +46,13 @@ public class BattleUnit : MonoBehaviour
         originalPosition = rectTransform.localPosition;
 
         currentHP = Mathf.Clamp(currentHP, 0, maxHP);
+        currentMP = Mathf.Clamp(currentMP, 0, maxMP);
     }
 
     public void Initialize(
         string name,
         int hp,
+        int mana,
         int def,
         int damage,
         int skill,
@@ -56,6 +62,8 @@ public class BattleUnit : MonoBehaviour
         unitName = name;
         maxHP = hp;
         currentHP = hp;
+        maxMP = mana;
+        currentMP = mana;
         defense = def;
         attackPower = damage;
         skillPower = skill;
@@ -102,6 +110,14 @@ public class BattleUnit : MonoBehaviour
 
         currentHP = Mathf.Min(maxHP, currentHP + amount);
         UpdateAppearance();
+    }
+
+    public bool SpendMana(int amount)
+    {
+        if (!IsAlive || amount < 0 || currentMP < amount)
+            return false;
+        currentMP -= amount;
+        return true;
     }
 
     public IEnumerator Attack()

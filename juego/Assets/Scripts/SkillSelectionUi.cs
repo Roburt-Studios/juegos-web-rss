@@ -30,7 +30,7 @@ public class SkillSelectionUI : MonoBehaviour
             TextMeshProUGUI label = skillButtons[i].GetComponentInChildren<TextMeshProUGUI>();
             if(label != null) label.text = skills[i].SkillName;
 
-            skillTexts[i].text = skills[i].SkillDescription;
+            skillTexts[i].text = skills[i].SkillDescription + " (" + skills[i].ManaCost + " MP)";
 
             int idx = i;
 
