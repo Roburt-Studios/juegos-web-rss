@@ -734,7 +734,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7d5482e143e60a47afdad6e9c7d09f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerChangeRole
-  role: 3
+  role: 2
 --- !u!114 &442473924
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2155,7 +2155,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7d5482e143e60a47afdad6e9c7d09f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerChangeRole
-  role: 2
+  role: 1
 --- !u!114 &1721581799
 MonoBehaviour:
   m_ObjectHideFlags: 0
