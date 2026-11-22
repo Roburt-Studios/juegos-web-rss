@@ -507,7 +507,7 @@ RectTransform:
   m_GameObject: {fileID: 910271569}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 0.31, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1314477089}
@@ -515,7 +515,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -449, y: 216}
+  m_AnchoredPosition: {x: -449, y: 283.8999}
   m_SizeDelta: {x: -940, y: -486}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &910271571
@@ -619,8 +619,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 1064825943, guid: e3182aae8ae823442863cb530524ce97, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -1190,7 +1190,7 @@ RectTransform:
   m_GameObject: {fileID: 1314477088}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 2.77, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 910271570}
@@ -1222,8 +1222,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Menu
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: e0609c1dd27b1d2468fcab5bbd29922d, type: 2}
+  m_sharedMaterial: {fileID: 4140447933701147599, guid: e0609c1dd27b1d2468fcab5bbd29922d, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1359,8 +1359,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "Carlos Vega San Rom\xE1n"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: e0609c1dd27b1d2468fcab5bbd29922d, type: 2}
+  m_sharedMaterial: {fileID: 4140447933701147599, guid: e0609c1dd27b1d2468fcab5bbd29922d, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1496,8 +1496,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "Hugo Garc\xEDa Hern\xE1ndez"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: e0609c1dd27b1d2468fcab5bbd29922d, type: 2}
+  m_sharedMaterial: {fileID: 4140447933701147599, guid: e0609c1dd27b1d2468fcab5bbd29922d, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1633,8 +1633,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Oscar Rodriguez Mari
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: e0609c1dd27b1d2468fcab5bbd29922d, type: 2}
+  m_sharedMaterial: {fileID: 4140447933701147599, guid: e0609c1dd27b1d2468fcab5bbd29922d, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2149,8 +2149,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "Javier Ruibal Pi\xF1ero"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: e0609c1dd27b1d2468fcab5bbd29922d, type: 2}
+  m_sharedMaterial: {fileID: 4140447933701147599, guid: e0609c1dd27b1d2468fcab5bbd29922d, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2286,8 +2286,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "Marcos Matutes Rap\xFAn"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: e0609c1dd27b1d2468fcab5bbd29922d, type: 2}
+  m_sharedMaterial: {fileID: 4140447933701147599, guid: e0609c1dd27b1d2468fcab5bbd29922d, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

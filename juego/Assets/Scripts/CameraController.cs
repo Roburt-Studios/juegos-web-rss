@@ -1,8 +1,10 @@
 using System;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
+using UnityEngine.InputSystem.Utilities;
 using UnityEngine.XR;
 using static System.TimeZoneInfo;
 
@@ -15,6 +17,7 @@ public class CameraController : MonoBehaviour
 
     [Header("Follow")]
     public float followSpeed = 5f;
+    public float focusHeight = 1f;
 
     [Header("Zoom")]
     public Camera cam;
@@ -25,6 +28,7 @@ public class CameraController : MonoBehaviour
 
     [Header("Rotation")]
     public Transform pivot;
+    public float pitch = 45f;
     public float rotationSpeed = 0.25f;
     public float rotationSmoothness = 5f;
     //public float maxRotationAngle = 80f;
@@ -40,7 +44,7 @@ public class CameraController : MonoBehaviour
     private Vector3 currentLookAhead;
     private Vector3 rootVelocity;
 
-    private float SmoothTime = 0.7f;
+    [SerializeField] private float SmoothTime = 0.7f;
     private float gameplayZoom;
     private float currentZoom;
     private float targetZoom;
@@ -50,6 +54,14 @@ public class CameraController : MonoBehaviour
 
     private Quaternion targetRotation;
     private Vector3 targetPosition;
+
+    [Header("Collision")]
+    public LayerMask collisionLayers;
+    public float collisionRadius = 0.3f;
+    public float collisionOffSet = 0.2f;
+    public float minCollisionDistance = 0.5f;
+    public float recoverSpeed = 5f;
+    float collisionDistance;
 
     private void Awake()
     {
@@ -77,7 +89,7 @@ public class CameraController : MonoBehaviour
             return;
         }
 
-        transform.position = target.position + target.forward * lookAheadDistance;
+        transform.position = target.position + Vector3.up * focusHeight + target.forward * lookAheadDistance;
 
         currentYaw = pivot.localEulerAngles.y;
         targetYaw = currentYaw;
@@ -87,21 +99,23 @@ public class CameraController : MonoBehaviour
         gameplayZoom = Mathf.Clamp(initialZoom, minZoom, maxZoom);
 
         currentZoom = gameplayZoom;
+        collisionDistance = currentZoom;
         targetZoom = gameplayZoom;
 
         Vector3 camPos = cam.transform.localPosition;
+        camPos.x = 0f;
+        camPos.y = 0f;
         camPos.z = -currentZoom;
         cam.transform.localPosition = camPos;
         SetSmoothTime(SmoothTime);
 
-        pivot.localRotation = Quaternion.Euler(45f, currentYaw, 0f);
+        pivot.localRotation = Quaternion.Euler(pitch, currentYaw, 0f);
     }
 
     void Update()
     {
         UpdateGameplayRotation();
         UpdateGameplayZoomInput();
-        UpdateCamera();
     }
 
     void LateUpdate()
@@ -109,6 +123,8 @@ public class CameraController : MonoBehaviour
         UpdateLookAhead();
         UpdateGameplayPosition();
         UpdateGameplayZoomTarget();
+
+        UpdateCamera();
     }
 
     public void UpdateLookAhead()
@@ -126,8 +142,8 @@ public class CameraController : MonoBehaviour
 
     public void UpdateGameplayPosition()
     {
-        SetTargetPosition(target.position + currentLookAhead);
-        SetTargetPosition(target.position + currentLookAhead);
+        SetTargetPosition(target.position + Vector3.up * focusHeight + currentLookAhead);
+        //SetTargetPosition(target.position + currentLookAhead);
     }
 
     public void UpdateGameplayRotation()
@@ -146,9 +162,9 @@ public class CameraController : MonoBehaviour
             targetYaw = initialYaw + relativeYaw;
         }
 
-        currentYaw = Mathf.LerpAngle(currentYaw, targetYaw, rotationSmoothness * Time.deltaTime);
+        //currentYaw = Mathf.LerpAngle(currentYaw, targetYaw, rotationSmoothness * Time.deltaTime);
 
-        SetTargetRotation(Quaternion.Euler(45f, currentYaw, 0f));
+        SetTargetRotation(Quaternion.Euler(45f, targetYaw, 0f));
     }
 
     public void UpdateGameplayZoomInput()
@@ -204,9 +220,33 @@ public class CameraController : MonoBehaviour
 
         currentZoom = Mathf.SmoothDamp(currentZoom, targetZoom, ref zoomVelocity, SmoothTime);
 
+        float allowedDistance = GetAllowedDistance(currentZoom);
+
+        if(allowedDistance < collisionDistance)
+        {
+            collisionDistance = allowedDistance;
+        }
+        else
+        {
+            collisionDistance = Mathf.Lerp(collisionDistance, allowedDistance, recoverSpeed * Time.deltaTime);
+        }
+
         Vector3 pos = cam.transform.localPosition;
         pos.z = -currentZoom;
         cam.transform.localPosition = pos;
+    }
+
+    private float GetAllowedDistance(float currentZoom)
+    {
+        Vector3 origin = pivot.position;
+        Vector3 direction = -pivot.forward;
+
+        if(Physics.SphereCast(origin, collisionRadius, direction, out RaycastHit hit, currentZoom, collisionLayers, QueryTriggerInteraction.Ignore))
+        {
+            return Mathf.Max(minCollisionDistance, hit.distance - collisionOffSet);
+        }
+
+        return currentZoom;
     }
 
     public void SetTargetPosition(Vector3 position)
